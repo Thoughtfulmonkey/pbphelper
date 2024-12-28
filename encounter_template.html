@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> 
+        <link rel="stylesheet" href="./css/edit.css?c=11">
+    </head>
+    <body>
+        <!-- Main application -->
+        <div id="app" class="container">
+
+            <!-- Modal for a creature -->
+            <div class="modal fade" id="creatureModal" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="creatureModalLabel">Creature</h5>
+                    </div>
+                    <div class="modal-body">
+                      
+                        <label>Name: </label>
+                        <input type="text" class="form-control" id="creatureName">
+
+                        <div class="container mt-2">
+                            <div class="row">
+                              <div class="col-sm">
+                                <label>Init: </label>
+                                <input type="text" class="form-control" id="creatureInit">
+                              </div>
+                              <div class="col-sm">
+                                <label>Quantity: </label>
+                                <input type="text" class="form-control" id="creatureQuantity">
+                              </div>
+                            </div>
+                        </div>
+
+                        <div class="container mt-2">
+                          <div class="row">
+                            <div class="col-sm">
+                              <label>EAC: </label>
+                              <input type="text" class="form-control" id="creatureEac">
+                            </div>
+                            <div class="col-sm">
+                              <label>KAC: </label>
+                              <input type="text" class="form-control" id="creatureKac">
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="container mt-2">
+                            <div class="row">
+                              <div class="col-sm">
+                                <label>HP: </label>
+                                <input type="text" class="form-control" id="creatureHp">
+                              </div>
+                              <div class="col-sm">
+                                <label>SP: </label>
+                                <input type="text" class="form-control" id="creatureSp">
+                              </div>
+                              <div class="col-sm">
+                                <label>RP: </label>
+                                <input type="text" class="form-control" id="creatureRp">
+                              </div>
+                            </div>
+                        </div>
+
+                        <div class="container mt-2">
+                            <div class="row">
+                              <div class="col-sm">
+                                <label>Fort: </label>
+                                <input type="text" class="form-control" id="creatureFort">
+                              </div>
+                              <div class="col-sm">
+                                <label>Ref: </label>
+                                <input type="text" class="form-control" id="creatureRef">
+                              </div>
+                              <div class="col-sm">
+                                <label>Will: </label>
+                                <input type="text" class="form-control" id="creatureWill">
+                              </div>
+                            </div>
+                        </div>
+
+                        <label class="mt-2">Movement: </label>
+                        <input type="text" class="form-control" id="creatureMoves" placeholder="e.g. walk:30;burrow:10">
+
+                        <label class="mt-2">Notes: </label>
+                        <textarea class="form-control" id="creatureNotes" rows="3"></textarea>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="CloseCreature">Cancel</button>
+                        <button type="button" class="btn btn-primary" @click="SaveCreature">Save</button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+
+            <!-- Modal for an attack -->
+            <div class="modal fade" id="attackModal" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="attackModalLabel">Attack</h5>
+                    </div>
+                    <div class="modal-body">
+                      
+                        <label>Owner: </label>
+                        <div class="dropdown mb-3">
+                          <button class="btn btn-secondary dropdown-toggle" type="button" id="ownerDropdown" data-bs-toggle='dropdown' aria-haspopup="true" aria-expanded="false">
+                            Select a creature
+                          </button>
+                          <div class="dropdown-menu">
+                            <a 
+                              v-for="(creature, index) in encounter.creatures" 
+                              class="dropdown-item" 
+                              href="#" 
+                              @click="ChooseOwner(index)">{{creature.name}}</a>
+                          </div>
+                        </div>
+
+                        <label>Name: </label>
+                        <input type="text" class="form-control" id="attackName">
+
+                        <div class="container mt-2">
+                            <div class="row">
+                              <div class="col-sm">
+                                <label>Range type: </label>
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="classDropdown" data-bs-toggle='dropdown' aria-haspopup="true" aria-expanded="false">
+                                      Range type
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                      <a class="dropdown-item" href="#" @click="ChooseClass('Melee')">Melee</a>
+                                      <a class="dropdown-item" href="#" @click="ChooseClass('Ranged')">Ranged</a>
+                                    </div>
+                                </div>
+
+                              </div>
+                              <div class="col-sm">
+                                <label>Range: </label>
+                                <input type="text" class="form-control" id="attackRange">
+                              </div>
+                            </div>
+                        </div>
+
+                        <div class="container mt-2">
+                            <div class="row">
+                              <div class="col-sm">
+                                <label>Hit modifier: </label>
+                                <input type="text" class="form-control" id="attackHit">
+                              </div>
+                              <div class="col-sm">
+                                <label>Damage: </label>
+                                <input type="text" class="form-control" id="attackDamage">
+                              </div>
+                              <div class="col-sm">
+                                <label>Type: </label>
+                                <input type="text" class="form-control" id="attackType">
+                              </div>
+                            </div>
+                        </div>
+
+                        <label class="mt-2">Notes: </label>
+                        <textarea class="form-control" id="attackNotes" rows="3"></textarea>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="CloseAttack">Cancel</button>
+                        <button type="button" class="btn btn-primary" @click="SaveAttack">Save</button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+
+            <div v-if="error" class="alert alert-danger" role="alert">
+                {{errorMessage}}
+            </div>
+  
+            <div v-if="loading" class="alert alert-info" role="alert">
+                Loading...
+            </div>
+
+            <div v-if="loaded" class="d-flex justify-content-center mt-3">
+
+              <a href="./index.html" class="btn btn-secondary small-right-margin" role="button">
+                <i class="fa-solid fa-house"></i> Home
+              </a>
+
+              <button 
+                type="button" 
+                class="btn btn-secondary small-right-margin"
+                :class="{ unsavedOverride : unsaved }"
+                @click="SaveTemplate">Save                  
+              </button>
+
+            </div>
+
+            <h1 class="mb-3">
+              {{encounter.templateName}}
+            </h1>
+
+            <h2>Creatures</h2>
+
+            <div class="card" v-for="(creature, index) in encounter.creatures">
+                <div class="card-header">
+                    <div class="float-left small-right-margin"><b>{{creature.name}}</b></div> 
+                    <div class="float-left"><span class="badge badge-info badge-bg-override">x{{creature.quantity}}</span></div>
+
+                    <div class="float-right">
+                        <button 
+                            :id="'btn-creature-' + index"
+                            type="button" 
+                            class="btn btn-primary btn-sm"
+                            @click="EditCreature">
+                            <i 
+                                :id="'lbl-creature-' + index"
+                                class="fa-solid fa-pen">
+                            </i>
+                        </button>
+                    </div>
+
+                </div>
+                <div class="card-body">
+                    <div class="mt-3">
+
+                        <table class="table">
+                            <thead>
+                              <tr>
+                                <th scope="col">init</th>
+                                <th scope="col">HP</th>
+                                <th scope="col">SP</th>
+                                <th scope="col">RP</th>
+                                <th scope="col">EAC</th>
+                                <th scope="col">KAC</th>
+                                <th scope="col">Fort</th>
+                                <th scope="col">Ref</th>
+                                <th scope="col">Will</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr >
+                                <td>{{creature.init}}</td>
+                                <td>{{creature.hp}}</td>
+                                <td>{{creature.sp}}</td>
+                                <td>{{creature.rp}}</td>
+                                <td>{{creature.eac}}</td>
+                                <td>{{creature.kac}}</td>
+                                <td>{{creature.fort}}</td>
+                                <td>{{creature.ref}}</td>
+                                <td>{{creature.will}}</td>
+                              </tr>
+                            </tbody>
+                        </table>
+
+                        <div>
+                            <b>Movement: </b> 
+                            <span class="badge badge-info badge-bg-override" v-for="move in creature.moves">{{move.type}}: {{move.speed}}</span>
+                        </div>
+
+                        <div>
+                            <b>Notes:</b>
+                            <ul>
+                                <li v-for="note in creature.notes">{{note}}</li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="loaded" class="d-flex justify-content-center mt-3">
+                <button 
+                  type="button" 
+                  class="btn btn-primary"
+                  v-on:click="NewCreature">New Creature</button>
+            </div>
+
+            <h2>Attacks</h2>
+
+            <div class="card" v-for="(attack, index) in encounter.attacks">
+                <div class="card-header">
+                    <div class="float-left"><b>{{attack.name}}</b> : {{LookUpCreatureId( attack.creature )}}</div> 
+
+                    <div class="float-right">
+                        <button 
+                            :id="'btn-attack-' + index"
+                            type="button" 
+                            class="btn btn-primary btn-sm"
+                            @click="EditAttack">
+                            <i 
+                                :id="'lbl-attack-' + index"
+                                class="fa-solid fa-pen">
+                            </i>
+                        </button>
+                    </div>
+
+                </div>
+                <div class="card-body">
+                    {{attack.class}}: {{attack.hit}} ({{attack.damage}} {{attack.type}}) : {{attack.range}}ft. <br />
+                    {{attack.note}}
+                </div>
+            </div>
+
+            <div v-if="loaded" class="d-flex justify-content-center mt-3">
+                <button 
+                  type="button" 
+                  class="btn btn-primary"
+                  v-on:click="NewAttack">New Attack</button>
+            </div>
+
+        </div>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+        <script src="https://kit.fontawesome.com/3720f97f63.js" crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+        <script src="./js/enc_temp_app.js?v=14"></script>
+    </body>
+</html>

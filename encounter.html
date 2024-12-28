@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> 
+        <link rel="stylesheet" href="./css/edit.css?c=11">
+    </head>
+    <body>
+        <!-- Main application -->
+        <div id="app" class="container">
+
+            <div v-if="error" class="alert alert-danger" role="alert">
+              {{errorMessage}}
+            </div>
+
+            <div v-if="loading" class="alert alert-info" role="alert">
+              Loading...
+            </div>
+
+            <!-- Fixed position button for scratchpad -->
+            <button v-if="loaded" class="btn btn-secondary btn-lg position-fixed bottom-0 end-0" type="button" @click="OpenScratchpadModal">
+              <i class="fa-solid fa-clipboard"></i>
+            </button>
+
+            <!-- Modal for the scratchpad -->
+            <div class="modal fade" id="scratchpadModal" tabindex="-1" role="dialog" aria-hidden="true">
+              <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="scratchpadModalLabel">Scratchpad</h5>
+                  </div>
+                  <div class="modal-body">
+                    <textarea class="form-control" id="scratchpadTextArea" rows="20"></textarea>
+                  </div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-danger" @click="ClearScratchpad">Clear</button>
+                      <button type="button" class="btn btn-primary" @click="CloseScratchpadModal">Close</button>
+                  </div>
+                </div>
+              </div>
+          </div>
+
+          <!-- Modal for note editing -->
+          <div class="modal fade" id="noteModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="noteModalLabel">Notes</h5>
+                </div>
+                <div class="modal-body">
+                  <textarea class="form-control" id="noteTextArea" rows="1"></textarea>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" @click="CancelNoteModal">Close</button>
+                  <button type="button" class="btn btn-primary" @click="SaveNoteModal">Save</button>
+                </div>
+              </div>
+            </div>
+        </div>
+
+            <!-- Modal for action selection -->
+            <div class="modal fade" id="actionModal" tabindex="-1" role="dialog" aria-labelledby="actionModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="actionModalLabel">Add an action</h5>
+                    </div>
+                    <div class="modal-body">
+
+                      <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" role="switch" id="attackToggle" checked @click="ToggleAttackEntry">
+                        <label class="form-check-label" for="attackToggle">Attack</label>
+                      </div>
+
+                      <div id="attackEntryBlock" v-if="enteringAttack">
+
+                        <div class="container mt-2">
+                          <div class="row">
+                            <div class="col-sm">
+                              <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle mb-2" type="button" id="actionSelector" data-bs-toggle='dropdown' aria-haspopup="true" aria-expanded="false">
+                                  Choose an attack
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="actionSelector">
+                                  <a 
+                                    v-for="(attack, index) in encounter.attacks"
+                                    :id="'att-' + index"
+                                    class="dropdown-item" 
+                                    href="#"
+                                    @click="SelectAttack">
+                                      {{attack.name}}
+                                    </a>
+                                    <a class="dropdown-item" @click="DefineNewAttack">New</a>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-sm">
+                              <input type="text" class="form-control" id="newAttackName" v-if="definingNewAttack">
+                            </div>
+                          </div>
+                          <!-- target row -->
+                          <div class="row">
+                            <!-- target nam -->
+                            <div class="col-sm">
+                              <label>Target: </label>
+                              <input type="text" class="form-control" id="attackTarget">
+                            </div>
+                          </div>
+                          <div class="row">
+                            <!-- badges for creature names -->
+                              <div class="mb-2">
+                                <span 
+                                  v-for="creature in encounter.stats"
+                                  :id="creature.id"
+                                  class="badge badge-info badge-bg-override"
+                                  @click="AddTarget">
+                                    {{creature.name}}
+                                </span>
+                              </div>
+                          </div>
+                          <!-- main attack details row -->
+                          <div class="row">
+                            <div class="col-sm">
+                              <label>Hit: </label>
+                              <input type="text" class="form-control" id="attackHit">
+                            </div>
+                            <div class="col-sm">
+                              <label>Damage: </label>
+                              <input type="text" class="form-control" id="attackDamage">
+                            </div>
+                            <div class="col-sm">
+                              <label>Type: </label>
+                              <input type="text" class="form-control" id="attackType">
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+
+                      <div id="genericEntryBlock" v-if="!enteringAttack">
+                        <!-- Text input field -->
+                        <textarea class="form-control mt-2" id="actionText" rows="3"></textarea>
+                      </div>
+
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" @click="CancelActionModal">Close</button>
+                      <button type="button" class="btn btn-primary" @click="SaveActionModal">Save</button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+
+            <!-- Modal to modify the JSON -->
+            <div class="modal fade" id="jsonModal" tabindex="-1" role="dialog" aria-hidden="true">
+              <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                  <div class="modal-body">
+                    <textarea class="form-control" id="jsonTextArea" rows="20"></textarea>
+                  </div>
+                  <div class="modal-footer">
+                    <div id="jsonErrorMessage" class="alert alert-danger invisible" role="alert">
+                      There is an error in the JSON
+                    </div>
+                    <button type="button" class="btn btn-secondary" @click="CancelJsonModal">Close</button>
+                    <button type="button" class="btn btn-primary" @click="SaveJsonModal">Save</button>
+                  </div>
+                </div>
+              </div>
+          </div>
+
+          <!-- Modal for config settings -->
+          <div class="modal fade" id="configModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="actionModalLabel">Settings</h5>
+                </div>
+                <div class="modal-body">
+                  <div class="dropdown">
+                    <p>Platform:</p>
+                    <button class="btn btn-secondary dropdown-toggle mb-2" type="button" id="platformSelector" data-bs-toggle='dropdown' aria-haspopup="true" aria-expanded="false">
+                      Choose a platform
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="platformSelector">
+                      <a 
+                        id="paizo-forum"
+                        class="dropdown-item" 
+                        @click="SelectPlatform">
+                          Paizo forums
+                      </a>
+                      <a 
+                        id="discord-sage"
+                        class="dropdown-item" 
+                        @click="SelectPlatform">
+                          Discord (Sage)
+                      </a>
+                    </div>
+                  </div>
+                </div> 
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" @click="CloseConfigModal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+            <div v-if="loaded" class="d-flex justify-content-center mt-3">
+
+              <a href="./index.html" class="btn btn-secondary small-right-margin" role="button">
+                <i class="fa-solid fa-house"></i> Home
+              </a>
+
+              <button 
+                type="button" 
+                class="btn btn-secondary small-right-margin"
+                v-on:click="OpenJsonModal">Open JSON</button>
+
+              <button 
+                type="button" 
+                class="btn btn-secondary small-right-margin"
+                :class="{ unsavedOverride : unsaved }"
+                v-on:click="SaveEncounter">Save</button>
+
+              <button 
+                type="button" 
+                class="btn btn-secondary small-right-margin"
+                v-on:click="OpenConfigModal">
+                  <i class="fa-solid fa-gear"></i>
+              </button>
+
+              <button
+                type="button" 
+                class="btn btn-primary btn-sm"
+                @click="CopyStatBlockToScratchpad">
+                  <i class="fa-solid fa-copy"></i>
+              </button>
+
+            </div>
+
+            <hr  v-if="loaded"/>
+
+            <div v-if="loaded" id="stat_table" class="mt-3">
+                <table class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">init</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">SP</th>
+                        <th scope="col">HP</th>
+                        <th scope="col">RP</th>
+                        <th scope="col">EAC</th>
+                        <th scope="col">KAC</th>
+                        <th scope="col">Notes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="(creature, index) in encounter.stats">
+                        <td :id="'init-'+index" @click="NumRoller">{{creature.init}}</td>
+                        <td :id="'name-'+index">{{creature.name}}</td>
+                        <td :id="'sp-'+index" @click="NumRoller">{{creature.sp}}<span class="max-stat"> /{{GetCreature(creature.ref).sp}}</span></td>
+                        <td :id="'hp-'+index" @click="NumRoller">{{creature.hp}}<span class="max-stat"> /{{GetCreature(creature.ref).hp}}</span></td>
+                        <td :id="'rp-'+index" @click="NumRoller">{{creature.rp}}<span class="max-stat"> /{{GetCreature(creature.ref).rp}}</span></td>
+                        <td :id="'eac-'+index" @click="NumRoller">{{creature.eac}}</td>
+                        <td :id="'kac-'+index" @click="NumRoller">{{creature.kac}}</td>
+                        <td :id="'note-'+index" @click="EditNote">{{creature.notes}}</td>
+                      </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div v-if="loaded" class="round big-gap" v-for="round in encounter.rounds">
+                <div class="d-flex justify-content-center mt-3">
+                  <h2>Round {{round.num}}</h2>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                          <th scope="col">Init</th>
+                          <th scope="col">Name</th>
+                          <th scope="col">Action</th>
+                          <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(actor, aindex) in round.actors">
+                            <td :id="'r' + round.num + 'init-'+aindex" @click="NumRoller">
+                              {{actor.init}}
+                            </td>
+                            <td><strong class="me-2">{{actor.name}}</strong></td>
+                            <td>
+                              <span class="action  me-2">{{actor.action}}</span>
+                              <img 
+                                v-if="actor.result != ''" 
+                                class="result-img"
+                                :src="'./img/' + actor.result + '.png'"
+                              />
+                            </td>
+                            <td>
+                                <button 
+                                    :id="'btn-' + round.num + '-' + aindex"
+                                    type="button" 
+                                    class="btn btn-primary btn-sm small-right-margin"
+                                    @click="OpenActionModal">
+                                    <i 
+                                        :id="'lbl-' + round.num + '-' + aindex"
+                                        class="fa-solid fa-pen">
+                                    </i>
+                                </button>
+                                <button 
+                                    :id="'cpybtn-' + round.num + '-' + aindex"
+                                    type="button" 
+                                    class="btn btn-primary btn-sm"
+                                    @click="CopyActionToScratchpad">
+                                    <i 
+                                        :id="'lbl-' + round.num + '-' + aindex"
+                                        class="fa-solid fa-copy">
+                                    </i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div v-if="loaded" class="d-flex justify-content-center mt-3 mb-3">
+              <button 
+                type="button" 
+                class="btn btn-primary"
+                v-on:click="AddNewRound">New round</button>
+            </div>
+
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+        <script src="https://kit.fontawesome.com/3720f97f63.js" crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+        <script src="./js/enc_app.js?v=16"></script>
+    </body>
+</html>

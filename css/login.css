@@ -1,0 +1,32 @@
+.btn-color{
+    background-color: #0e1c36;
+    color: #fff;
+}
+.btn-color:hover{
+    background-color: #0e1c36;
+    color: #fff;
+}
+  
+.profile-image-pic{
+    height: 200px;
+    width: 200px;
+    object-fit: cover;
+}
+  
+.cardbody-color{
+    background-color: #ebf2fa;
+}
+  
+a{
+    text-decoration: none;
+}
+
+#error-message{
+   text-align: center;
+   font-weight: bold;
+   color: #cd0808;
+}
+
+.hidden{
+    display: none;
+}

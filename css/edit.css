@@ -1,0 +1,48 @@
+
+.big-gap{
+    margin-top: 30px;
+}
+
+.badge-bg-override{
+    background-color: #17a2b8;
+    margin-right: 3px;
+}
+
+.btn-tiny{
+    --bs-btn-padding-y: .1rem;
+    --bs-btn-padding-x: .5rem;
+    --bs-btn-font-size: .75rem;
+}
+
+#action-btn-group{
+    float:right;
+}
+
+.float-left{
+    float:left;
+}
+
+.float-right{
+    float:right;
+}
+
+.small-right-margin{
+    margin-right: 3px;
+}
+
+.cell-highlight{
+    background-color: #0dcaf0 !important;
+}
+
+.result-img{
+    width: 24px;
+}
+
+.unsavedOverride{
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+}
+
+.max-stat{
+    color: #dadada;
+}
