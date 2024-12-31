@@ -42,23 +42,25 @@
                     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 
                     $stmt = $conn->prepare('CREATE TABLE `'.$prefix.'template` (
-                        `id` int UNSIGNED NOT NULL,
+                        `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
                         `publicId` varchar(5) NOT NULL,
                         `side` varchar(10) NOT NULL,
                         `name` varchar(40) NOT NULL,
-                        `json` json NOT NULL
+                        `json` json NOT NULL,
+                        PRIMARY KEY (`id`)
                     );');
                     $stmt->execute();
 
                     echo "<p>Created template table. <span class='success'>✔</span></p>";
 
                     $stmt = $conn->prepare('CREATE TABLE `'.$prefix.'encounter` (
-                        `id` int UNSIGNED NOT NULL,
+                        `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
                         `ts` timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP,
                         `publicId` varchar(5) NOT NULL,
                         `name` varchar(80) NOT NULL,
                         `template` int UNSIGNED NOT NULL,
-                        `json` json NOT NULL
+                        `json` json NOT NULL,
+                        PRIMARY KEY (`id`)
                     );');
                     $stmt->execute();
 
