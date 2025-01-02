@@ -44,6 +44,8 @@ To copy status text for a round, complete the following steps:
 2. In the lower right corner, select the scratch pad icon.
 3. Copy the text from the scratch pad.
 
+**Note**: For enemy creatures, hit points are shown as the amount lost and start at zero.
+
 ![](./img/encounter_track_forum.png "Status text formatted for a forum")
 
 ![](./img/encounter_track_discord.png "Status text formatted for Discord")
