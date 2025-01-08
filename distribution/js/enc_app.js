@@ -723,7 +723,7 @@ Vue.createApp({
                 }
             }
 
-            $('#scratchpadTextArea').append(actionText + "\n");
+            document.getElementById('scratchpadTextArea').value += actionText + "\n"
         },
         FormatStatLineForum(isTheirTurn, stats, creature){
 
@@ -876,10 +876,10 @@ Vue.createApp({
                 fstat += "#-----" + this.FillChars("-", maxNameLength) + "------------------#`";
             }
 
-            $('#scratchpadTextArea').append(fstat + "\n");
+            document.getElementById('scratchpadTextArea').value += fstat + "\n"
         },
         ClearScratchpad(){                          // Clears the scratchpad
-            $('#scratchpadTextArea').text("");
+            document.getElementById('scratchpadTextArea').value = "";
         },
         SaveEncounter(){
 
