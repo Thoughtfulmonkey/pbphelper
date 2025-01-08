@@ -10,7 +10,7 @@ You use an encounter to track actions in a combat. You can copy formated text fr
 
 The currently supported formats for outputted text are as follows:
 
-* Paizo forums: Basic HTML formatting.
+* Paizo forums
 * Discord (Sage)
 
 To choose an output format, complete the following steps:
