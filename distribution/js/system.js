@@ -1,4 +1,4 @@
-let buildnum = "scr-001";
+let buildnum = "note-001";
 
 // Display build number
 const builddiv = document.createElement("div");

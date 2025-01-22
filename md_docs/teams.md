@@ -23,7 +23,6 @@ It's optional to define attacks. Typically, players will provide attack details.
 
 **Notes:**
 * For PCs, enter 1 in the quantity field.
-* Notes are not recorded.
 
 ## Editing a creature
 
@@ -36,9 +35,6 @@ It's optional to define attacks. Typically, players will provide attack details.
 2. In the **Attack** form, from the **Owner** list, select the creature who will perform the attack.
 3. Complete the rest of the fields.
 4. Select **Save**.
-
-**Notes:**
-* Notes are not recorded.
 
 ## Editing an attack
 1. On the encounter template page, select the pencil icon for the attack that you want to edit.

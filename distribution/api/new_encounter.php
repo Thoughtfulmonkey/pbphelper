@@ -41,6 +41,8 @@ function isJson($string) {
     $tc->kac = $cData->kac;
     $tc->ref = $cData->id;
 
+    $tc->creaturenotes = $cData->creaturenotes;
+
     if ( str_starts_with($cData->id, "pc") ){
         $tc->id = $cData->id;
         $tc->type = "pc";
@@ -90,6 +92,7 @@ function UpdateStats($copyTo, $copyFrom){
                     $copyTo[$t]->rp = $copyFrom[$f]->rp;
                     $copyTo[$t]->eac = $copyFrom[$f]->eac;
                     $copyTo[$t]->kac = $copyFrom[$f]->kac;
+                    $copyTo[$t]->stats = $copyFrom[$f]->stats;
                 }
             }
         }
@@ -205,7 +208,7 @@ if ( isJson($postdata) ){
     
         // Add settings
         $settings = new stdClass();
-        $settings->platform = "paizo-forum";
+        $settings->platform = "paizo-forum"; // TODO: load DB settings
         $encounter->settings = $settings;
 
         // Copying stuff from another encounter

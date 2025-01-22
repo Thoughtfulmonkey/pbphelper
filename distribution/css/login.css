@@ -30,3 +30,10 @@ a{
 .hidden{
     display: none;
 }
+
+.build-num{
+    color: #a7a7a7;
+    position: absolute;
+    top: 9px;
+    right: 9px;
+}

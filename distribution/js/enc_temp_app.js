@@ -87,7 +87,7 @@ Vue.createApp({
             $('#creatureRef').val("");
             $('#creatureWill').val("");
             $('#creatureMoves').val("");
-            $('#creatureNotes').text("");
+            $('#creatureNotes').val("");
 
             $('#creatureModal').modal('show');
         },
@@ -108,6 +108,7 @@ Vue.createApp({
             $('#creatureFort').val(c.fort);
             $('#creatureRef').val(c.ref);
             $('#creatureWill').val(c.will);
+            $('#creatureNotes').val(c.creaturenotes);
 
             let moveset = "";
             for (let i=0; i<c.moves.length; i++){
@@ -141,7 +142,6 @@ Vue.createApp({
                 
                 creatureBlockRef.sp = 0;
                 creatureBlockRef.rp = 0;
-                creatureBlockRef.notes = [];
 
                 this.encounter.creatures.push(creatureBlockRef);
             }
@@ -161,6 +161,8 @@ Vue.createApp({
             creatureBlockRef.fort = Number($('#creatureFort').val() );
             creatureBlockRef.ref = Number($('#creatureRef').val() );
             creatureBlockRef.will = Number($('#creatureWill').val() );
+
+            creatureBlockRef.creaturenotes = $('#creatureNotes').val();
 
             let movesString = $('#creatureMoves').val();
             let moves = movesString.split(";")
@@ -194,7 +196,6 @@ Vue.createApp({
             $('#classDropdown').text("Choose class");
             $('#attackDamage').val("");
             $('#attackType').val("");
-            //$('#attackNotes').text("");
             $('#attackNotes').val("");
 
             $('#attackModal').modal('show');
@@ -218,8 +219,7 @@ Vue.createApp({
             $('#attackHit').val(a.hit);
             $('#attackDamage').val(a.damage);
             $('#attackType').val(a.type);
-            //$('#attackNotes').text(a.note);
-            $('#attackNotes').val(a.note);
+            $('#attackNotes').val(a.attacknotes);
 
             // Set dropdown text
             if (a.class="melee") $('#classDropdown').text("Melee");
@@ -254,8 +254,7 @@ Vue.createApp({
             attackBlockRef.hit = $('#attackHit').val();
             attackBlockRef.damage = $('#attackDamage').val();
             attackBlockRef.type = $('#attackType').val();
-            //attackBlockRef.note = $('#attackNotes').text();
-            attackBlockRef.note = $('#attackNotes').val();
+            attackBlockRef.attacknotes = $('#attackNotes').val();
             attackBlockRef.creature = this.ownerId;
 
             // Note unsaved date

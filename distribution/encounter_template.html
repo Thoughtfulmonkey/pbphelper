@@ -261,9 +261,7 @@
 
                         <div>
                             <b>Notes:</b>
-                            <ul>
-                                <li v-for="note in creature.notes">{{note}}</li>
-                            </ul>
+                            {{creature.creaturenotes}}
                         </div>
 
                     </div>
@@ -299,7 +297,7 @@
                 </div>
                 <div class="card-body">
                     {{attack.class}}: {{attack.hit}} ({{attack.damage}} {{attack.type}}) : {{attack.range}}ft. <br />
-                    {{attack.note}}
+                    {{attack.attacknotes}}
                 </div>
             </div>
 
@@ -318,6 +316,6 @@
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
         <script src="./js/system.js"></script>
-        <script src="./js/enc_temp_app.js?v=14"></script>
+        <script src="./js/enc_temp_app.js?v=15"></script>
     </body>
 </html>

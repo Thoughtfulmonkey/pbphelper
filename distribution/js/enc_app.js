@@ -10,13 +10,16 @@ Vue.createApp({
             actionID: "",               // Stores the ID when an action is edited
             noteID: "",                 // Stores the ID when a note is edited
             lastHighlighted: "",        // Stores the ID of the table cell currently highlighted
+            creatureInfoID: "",         // ID of the last creature whose info was displayed in the modal
             sep: "==",                  // Seperator for encoded actions
             targetVar: ":target:",      // Variable for the target - to be replaced
             eacList: ['A', 'C', 'E', 'F', 'So'],    // List of energy damage
             kacList: ['B', 'P', 'S'],               // List of kinetic damage
             unsaved: false,             // Set to true when things change and false after a save
             enteringAttack: true,
-            definingNewAttack: false
+            definingNewAttack: false,
+            displayAttackNotes: true,
+            attackNotesToDisplay: "Test notes"
         }
     },
     mounted () {
@@ -110,6 +113,14 @@ Vue.createApp({
 
             return encodedString;
         },
+        GetRollText(mod, type){                     // Format a D20 roll
+
+            if (this.encounter.settings.platform == "paizo-forum"){
+                return "[dice=" + type + "]1d20+" + mod + "[/dice] ";
+            } else {
+                return "[1d20+" + mod + " " + type + "]";
+            }
+        },
         OpenJsonModal(e){                           // Opens the modal to modify the JSON
             // Add the current JSON to the text area
             $('#jsonTextArea').val(JSON.stringify(this.encounter, null, 4));
@@ -140,6 +151,62 @@ Vue.createApp({
                 // JSON error
                 $('#jsonErrorMessage').removeClass("invisible");
             }
+        },
+        OpenCreatureModal(e){
+
+            let nameID = e.target.id;
+            let parts = nameID.split("-");
+            let idNum = Number(parts[1]);
+
+            // Set title
+            $('#creatureModalTitle').html(this.encounter.stats[idNum].name);
+
+            // Set notes
+            if (this.encounter.stats[idNum].creaturenotes){
+                $('#creatureModalNotes').html(this.encounter.stats[idNum].creaturenotes);
+            }
+
+            // Get other stats
+            let creatureID = this.encounter.stats[idNum].id;
+            if (creatureID.indexOf("-")){
+                creatureID = creatureID.split("-")[0];
+            }
+            let creature = this.GetCreature(creatureID);
+
+            // Store the ID
+            this.creatureInfoID = creatureID;
+
+            // Display the reflex scores
+            $('#creatureFort').html(creature.fort);
+            $('#creatureRef').html(creature.ref);
+            $('#creatureWill').html(creature.will);
+
+            $('#creatureModal').modal('show');
+        },
+        CopySave(saveType){
+
+            // Is there a saved ID?
+            if (this.creatureInfoID != ""){
+
+                let creature = this.GetCreature(this.creatureInfoID);
+                let rollText = "";
+
+                switch(saveType){
+                    case "fort":
+                        rollText = this.GetRollText(creature.fort, "Fortitude save");
+                        break;
+                    case "ref":
+                        rollText = this.GetRollText(creature.ref, "Reflex save");
+                        break;
+                    case "will":
+                        rollText = this.GetRollText(creature.will, "Will save");
+                        break;
+                }
+                document.getElementById('scratchpadTextArea').value += rollText + "\n"
+            }
+        },
+        CloseInfoModal(){
+            $('#creatureModal').modal('hide');
         },
         SetPlatformDropdown(){
             if (this.encounter.settings.platform == "paizo-forum"){
@@ -205,6 +272,9 @@ Vue.createApp({
 
             // Hide the new attack name field
             this.definingNewAttack = false;
+
+            // Hide the attack notes
+            this.displayAttackNotes = false;
 
             // Is the action an attack?
             if (this.IsValidAttack(actionString)){
@@ -396,6 +466,16 @@ Vue.createApp({
 
             $('#actionSelector').text(attackInfo.name);
 
+            // Display note, if there is one for this attack
+            if (attackInfo.attacknotes){
+                this.displayAttackNotes = true;
+                this.attackNotesToDisplay = attackInfo.attacknotes;
+            }
+            else{
+                // Hide attack notes
+                this.displayAttackNotes = false;
+            }
+
             this.definingNewAttack = false;
         },
         DefineNewAttack(){
@@ -410,6 +490,7 @@ Vue.createApp({
             $('#actionSelector').text("New");
 
             this.definingNewAttack = true;
+            this.displayAttackNotes = false;
         },
         LookupCreatureName(creatureID){             // Uses a creature ID to look up its name
 
