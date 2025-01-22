@@ -53,3 +53,13 @@
     top: 9px;
     right: 9px;
 }
+
+.minor-heading{
+    font-weight: bold;
+    margin-top: 9px;
+    margin-bottom: 3px;
+}
+
+.save-num{
+    margin-right: 9px;
+}

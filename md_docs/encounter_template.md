@@ -23,7 +23,6 @@ It's optional to define attacks, but is recommended for creatures in encounters.
 
 **Notes:**
 * For creatures in encounters, Stamina Points (SP) and Resolve Points (RP) are typically 0.
-* Notes are not recorded.
 
 ## Editing a creature
 
@@ -36,9 +35,6 @@ It's optional to define attacks, but is recommended for creatures in encounters.
 2. In the **Attack** form, from the **Owner** list, select the creature who will perform the attack.
 3. Complete the rest of the fields.
 4. Select **Save**.
-
-**Notes:**
-* Notes are not recorded.
 
 ## Editing an attack
 1. On the encounter template page, select the pencil icon for the attack that you want to edit.
