@@ -11,7 +11,10 @@ Vue.createApp({
             ownerId: -1,
             attackID: null,
             chosenClass: "",
-            unsaved: false
+            unsaved: false,             // True when there is unsaved data
+            side: "",                   // "pc" or "enemy"
+            importedCreature: {},       // Stores an imported creature, waiting for confirmation
+            importedAttacks: []         // An array of imported attacks
         }
     },
     mounted () {
@@ -41,6 +44,8 @@ Vue.createApp({
         PostDataLoad(){                             // Called after data load
             this.loading = false;
             this.loaded = true;
+
+            this.side = this.encounter.side;        // Load whether PCs or enemies from the JSON
         },
         GenerateRandomID(reviewBlock){              // Generates a 5 digit ID unique to the array
             let uniqueId = false;
@@ -61,6 +66,14 @@ Vue.createApp({
             } while (!uniqueId);
 
             return(candidate);
+        },
+        isJsonString(str) {                         // Tests whether string is JSON
+            try {
+                JSON.parse(str);
+            } catch (e) {
+                return false;
+            }
+            return true;
         },
         LookUpCreatureId(creatureId){
             for (let i=0; i<this.encounter.creatures.length; i++){
@@ -284,6 +297,189 @@ Vue.createApp({
                 // Content now saved
                 this.unsaved = false;
             });
+        },
+        OpenImportModal(){
+            $('#importModal').modal('show');
+        },
+        CloseImportModal(){
+            $('#importModal').modal('hide');
+        },
+        DisplayCreatureForConfirmation(c){
+
+            let cText = "";
+
+            cText += "Name: " + c.name + "\n";
+            cText += "Initiative: " + c.init + "\n";
+            cText += "EAC: " + c.eac + "\n";
+            cText += "KAC: " + c.kac + "\n";
+            cText += "HP: " + c.hp + "\n";
+            cText += "SP: " + c.sp + "\n";
+            cText += "RP: " + c.rp + "\n";
+            cText += "Fortitude: " + c.fort + "\n";
+            cText += "Reflex: " + c.ref + "\n";
+            cText += "Will: " + c.will + "\n";
+            
+            $("#ImportTextArea").val(cText);
+        },
+        DisplayAttacksForConfirmation(atts){
+
+            let text = $("#ImportTextArea").val();
+
+            for (let i=0; i<atts.length; i++){
+
+                text += "\n";
+                text += "Attack: " + atts[i].name + ": ";
+                text += "1d20+" + atts[i].hit + ": " + atts[i].damage + " (" + atts[i].type + ")";
+            }
+
+            $("#ImportTextArea").val(text);
+        },
+        ProcessImportedStats(importedjson){
+
+            this.importedCreature = {};
+
+            this.importedCreature.name = importedjson.name;
+            this.importedCreature.init = importedjson.initiative.total;
+            this.importedCreature.quantity = 1;
+            this.importedCreature.eac = importedjson.armorClass.eac.total;
+            this.importedCreature.kac = importedjson.armorClass.kac.total;
+            this.importedCreature.hp = importedjson.vitals.health.max;
+            this.importedCreature.sp = importedjson.vitals.stamina.max;
+            this.importedCreature.rp = importedjson.vitals.resolve.max;
+            this.importedCreature.fort = importedjson.saves.fortitude.total;
+            this.importedCreature.ref = importedjson.saves.reflex.total;
+            this.importedCreature.will = importedjson.saves.will.total;
+
+            // Extract movement
+            let moveTypes = Object.keys(importedjson.speed);
+            this.importedCreature.moves = [];
+            for (let i=0; i<moveTypes.length; i++){
+
+                if (moveTypes[i] != "notes"){
+                    let moveEntry = {};
+                    moveEntry.type = moveTypes[i];
+                    moveEntry.speed = importedjson.speed[moveTypes[i]];
+                    this.importedCreature.moves.push(moveEntry);
+                }
+            }
+        },
+        ProcessImportedAttacks(importedjson){
+
+            // Wipe any previously stored attacks
+            this.importedAttacks = [];
+
+            // Loop over inventory, looking for weapons
+            for (let a=0; a<importedjson.inventory.length; a++){
+
+                item = importedjson.inventory[a];
+
+                // Is it a weapon?
+                if (item.type == "Weapon"){
+
+                    attack = {};
+
+                    attack.name = item.name;
+                    attack.hit = item.toHit;
+                    attack.type = item.damage.damage[0];
+                    attack.damage = item.damage.dice.count + "d" + item.damage.dice.sides + "+" + item.damageBonus;
+                    attack.attacknotes = "";
+
+                    if (item.range){
+                        attack.class = "Ranged";
+                        attack.range = item.range + "";
+                    }
+                    else {
+                        attack.class = "Melee";
+                        attack.range = "5";     // Doesn't take into account creature or weapon reach
+                    }
+
+                    this.importedAttacks.push(attack);
+                }
+            }
+        },
+        ProcessImport(importText){
+            
+            // Check if still valid JSON
+            if (this.isJsonString( importText )){
+
+                // Convert to JSON
+                let importedjson = JSON.parse( importText );
+                
+                this.ProcessImportedStats(importedjson);
+                this.ProcessImportedAttacks(importedjson);
+
+                this.DisplayCreatureForConfirmation(this.importedCreature);
+                this.DisplayAttacksForConfirmation(this.importedAttacks);
+            }
+            else{
+                // JSON error
+                
+            }
+        },
+        ConfirmImport(){
+            // Set ID
+            this.encounter.maxId += 1;
+            this.importedCreature.id = "pc" + this.encounter.maxId;
+
+            // Set required but not imported parameters
+            this.importedCreature.creaturenotes = "";
+
+            // Add creature to data store
+            this.encounter.creatures.push(this.importedCreature);
+
+            // Update and add attacks
+            for (let i=0; i<this.importedAttacks.length; i++){
+
+                // Add creature ID
+                this.importedAttacks[i].creature = this.importedCreature.id;
+
+                // Set unique ID
+                this.importedAttacks[i].id = this.GenerateRandomID(this.encounter.attacks);
+
+                // Add to data store
+                this.encounter.attacks.push(this.importedAttacks[i]);
+            }
+
+            // UI update
+            $('#importModal').modal('hide');
+            this.unsaved = true;
+        },
+        ImportFileRead(ev){
+            this.ProcessImport(ev.target.result);
+        },
+        DragHighlight(){
+            $("#drop_zone").addClass("drag_over");
+        },
+        RemoveDragHighlight(){
+            $("#drop_zone").removeClass("drag_over");
+        },
+        LoadDroppedFile(ev){
+            // Prevent default behaviour (display of the file)
+            ev.preventDefault();
+
+            // Remove CSS class
+            $("#drop_zone").removeClass("drag_over");
+
+            if (ev.dataTransfer.items) {
+
+                // Use DataTransferItemList interface to access the file(s)
+                [...ev.dataTransfer.items].forEach((item, i) => {
+
+                    // If dropped items aren't files, reject them
+                    if (item.kind === "file") {
+                        const file = item.getAsFile();
+
+                        reader = new FileReader();
+                        reader.onload = this.ImportFileRead;
+                        reader.readAsText(file);
+                    }
+                });
+            } else {
+                // Use DataTransfer interface to access the file(s)
+                [...ev.dataTransfer.files].forEach((file, i) => {
+                    // Probably the same as for items, but can't test
+                });
+            }
         }
     }
 }).mount('#app')

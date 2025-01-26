@@ -1,14 +1,14 @@
 Vue.createApp({
     data() {
         return{
+            signingIn: false
         }
     },
     mounted () {
     },
     methods:{
         SignIn(){
-
-            console.log("Signing in");
+            this.signingIn = true;
 
             fetch('./api/login.php', {
                 method: "POST",
@@ -19,6 +19,8 @@ Vue.createApp({
             .then(data => this.SignInResult(data));
         },
         SignInResult(data){
+            this.signingIn = false;
+
             if (data.result == "success"){
                 // Redirect to main app on log-in success        
                 window.location.href = "./index.html";

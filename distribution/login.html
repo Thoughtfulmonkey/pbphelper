@@ -17,9 +17,15 @@
         
                   <div class="card-body cardbody-color p-lg-5">
                     <div class="mb-3">
-                      <input type="password" class="form-control" id="password" placeholder="password">
+                      <input 
+                        v-on:keyup.enter="SignIn"
+                        type="password" class="form-control" id="password" placeholder="password">
                     </div>
-                    <div class="text-center"><button class="btn btn-color px-5 mb-2 w-100" @click="SignIn">Login</button></div>
+                    <div class="text-center">
+                      <button class="btn btn-color px-5 mb-2 w-100" @click="SignIn">
+                        Login <img v-if="signingIn" src="./img/throbber.gif" />
+                      </button>
+                    </div>
                     <div id="error-message" class="hidden"></div>
                   </div>
 
@@ -35,5 +41,5 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
     <script src="./js/system.js"></script>
-    <script src="./js/login_app.js?v=4"></script>
+    <script src="./js/login_app.js?v=5"></script>
 </html>
