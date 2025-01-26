@@ -915,9 +915,9 @@ Vue.createApp({
 
             // Format first line
             if (this.encounter.settings.platform == "paizo-forum"){
-                fstat += "[b]Round " + this.encounter.rounds.length + "[/b] \n\n";
+                fstat += "[b]Round " + this.encounter.rounds.length + "[/b] \n";
             } else {
-                fstat += "**Round "+ this.encounter.rounds.length + "** \n\n";
+                fstat += "**Round "+ this.encounter.rounds.length + "** \n";
                 fstat += "`#-----" + this.FillChars("-", maxNameLength) + "------------------#\n";
                 fstat += " In.  " + this.PadToCharsR("Name", maxNameLength) + "  SP     HP     RP\n";
             }
@@ -958,6 +958,36 @@ Vue.createApp({
             }
 
             document.getElementById('scratchpadTextArea').value += fstat + "\n"
+        },
+        CopyInitiativeToScratchpad(){
+
+            let ilist = "";
+
+            // Loop over stats
+            for (let i=0; i<this.encounter.stats.length; i++){
+
+                // Lookup creature info for initiative
+                let creature = this.GetCreature(this.encounter.stats[i].ref);
+
+                // Format a stat line
+                if (this.encounter.settings.platform == "paizo-forum"){
+                    ilist += "[dice=Initiative " + creature.name + "]1d20+" + creature.init + "[/dice]\n";
+                } else {
+                    ilist += "[1d20+" + creature.init + " Initiative " + creature.name + "]\n";
+                }
+            }
+
+            document.getElementById('scratchpadTextArea').value += ilist + "\n"
+        },
+        CopyCreatureInfoToScratchpad(){
+
+            // Are there any rounds?
+            if (this.encounter.rounds.length > 0){
+                this.CopyStatBlockToScratchpad();   // Copy stat block
+            } 
+            else {
+                this.CopyInitiativeToScratchpad();  // Copy initiative
+            }
         },
         ClearScratchpad(){                          // Clears the scratchpad
             document.getElementById('scratchpadTextArea').value = "";
