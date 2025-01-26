@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> 
-        <link rel="stylesheet" href="./css/edit.css?c=11">
+        <link rel="stylesheet" href="./css/edit.css?c=15">
     </head>
     <body>
         <!-- Main application -->
@@ -83,7 +83,7 @@
                         </div>
 
                         <label class="mt-2">Movement: </label>
-                        <input type="text" class="form-control" id="creatureMoves" placeholder="e.g. walk:30;burrow:10">
+                        <input type="text" class="form-control" id="creatureMoves" placeholder="e.g. land:30;burrow:10">
 
                         <label class="mt-2">Notes: </label>
                         <textarea class="form-control" id="creatureNotes" rows="3"></textarea>
@@ -174,6 +174,34 @@
                 </div>
             </div>
 
+            <!-- Modal for creature import -->
+            <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-hidden="true">
+              <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="importModalLabel">Creature import</h5>
+                  </div>
+                  <div class="modal-body">
+                    <div
+                      id="drop_zone"
+                      class="mb-2"
+                      @drop="LoadDroppedFile($event)"
+                      @dragover.prevent
+                      @dragenter="DragHighlight"
+                      @dragleave="RemoveDragHighlight">
+                        <p>Drag an Hephaistos JSON export here.</p>
+                    </div>
+                    <textarea class="form-control" id="ImportTextArea" rows="10"></textarea>
+                  </div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" @click="CloseImportModal">Cancel</button>
+                      <button type="button" class="btn btn-primary" @click="ConfirmImport">Confirm</button>
+                  </div>
+                </div>
+              </div>
+          </div>
+
+
             <div v-if="error" class="alert alert-danger" role="alert">
                 {{errorMessage}}
             </div>
@@ -193,6 +221,13 @@
                 class="btn btn-secondary small-right-margin"
                 :class="{ unsavedOverride : unsaved }"
                 @click="SaveTemplate">Save                  
+              </button>
+
+              <button 
+                type="button" 
+                class="btn btn-secondary small-right-margin"
+                v-if="side ==='pc'"
+                @click="OpenImportModal">Import                  
               </button>
 
             </div>
@@ -316,6 +351,6 @@
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
         <script src="./js/system.js"></script>
-        <script src="./js/enc_temp_app.js?v=15"></script>
+        <script src="./js/enc_temp_app.js?v=19"></script>
     </body>
 </html>
