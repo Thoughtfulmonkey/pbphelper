@@ -101,10 +101,13 @@ Vue.createApp({
         },
         AttackFieldsToEncodedString(){              // "attack_name" + this.sep + ":target:" + this.sep + "1d20+x" + this.sep + "1dy+z type" + this.sep
             let encodedString = "";
-            if ($('#actionSelector').text() == "New"){
+            if ($('#actionSelector').text() == "New"){                          // New attack. Use new name.
                 encodedString += $('#newAttackName').val() + this.sep;
             }
-            else{
+            if ($('#actionSelector').text().indexOf("Choose an attack")>-1){    // Attack without name selection
+                encodedString += "Attack" + this.sep;
+            }
+            else{                                                               // Attack with selection
                 encodedString += $('#actionSelector').text() + this.sep;
             } 
             encodedString += $('#attackTarget').val() + this.sep;
