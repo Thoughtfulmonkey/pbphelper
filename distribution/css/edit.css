@@ -76,3 +76,7 @@
 .drag_over{
     border: 1px solid #1cc6e9 !important;
 }
+
+.with-options{
+    justify-content: space-between !important;
+}

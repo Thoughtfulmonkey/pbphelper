@@ -8,11 +8,13 @@ This software uses trademarks and/or copyrights owned by Paizo Inc., used under 
 
 This is a web application. You'll require a sever that meets the following requirements:
 
-* PHP: 8.3.0 tested but almost any version should work.
+* PHP: 8.3.0 tested. Minimum of PHP 8.0 required.
 * MySQL: 8.2.0 tested
 * PDO driver: Almost certainly included in your PHP installation.
 
 You can easily test or run the PbP helper locally through a local server. For example, https://www.uniformserver.com/.
+
+**Note**: PHP 8.0 is required because the [str_starts_with](https://www.php.net/manual/en/function.str-starts-with.php) function is used. You could replace it if you need to use an earlier version of PHP.
 
 ## Installation
 

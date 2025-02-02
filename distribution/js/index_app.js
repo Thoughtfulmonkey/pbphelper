@@ -131,6 +131,44 @@ Vue.createApp({
         },
         ToggleContinue(){
             this.continuing = !this.continuing;
+        },
+        Delete(section, id){
+            console.log("Section: " + section + " : " + id);
+
+            fetch('./api/delete_listing.php', {
+                method: "POST",
+                headers: {'Content-Type': 'application/json'}, 
+                body: '{"section": "' + section + '", "id": "' + id + '"}'  // Don't encode here, otherwise need double decode to access in PHP
+            })
+            //.then(response => this.EncounterCreated(response));
+            .then(response => response.json())
+            .then(data => this.DeleteResult(data));
+        },
+        DeleteResult(data){
+            if (data.result == "success"){
+                console.log("Success");
+
+                let sectionArray = null;
+                if (data.section=="template") sectionArray = this.listing.templates;
+                if (data.section=="team") sectionArray = this.listing.teams;
+                if (data.section=="encounter") sectionArray = this.listing.encounters;
+
+                // Look for match
+                matchIndex = -1;
+                for (let i=0; i<sectionArray.length; i++){
+                    if (sectionArray[i].id == data.id){
+                        matchIndex = i;
+                    }
+                }
+                
+                // Was a match found?
+                if (matchIndex > -1){
+                    sectionArray.splice(matchIndex, 1);
+                }
+            }
+            else{
+                console.log(data.message);
+            }
         }
     }
 }).mount('#app')
