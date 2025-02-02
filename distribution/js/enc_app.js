@@ -119,9 +119,9 @@ Vue.createApp({
         GetRollText(mod, type){                     // Format a D20 roll
 
             if (this.encounter.settings.platform == "paizo-forum"){
-                return "[dice=" + type + "]1d20+" + mod + "[/dice] ";
+                return "[dice=" + type + "]1d20" + this.AddModifierSign(mod) + "[/dice] ";
             } else {
-                return "[1d20+" + mod + " " + type + "]";
+                return "[1d20" + this.AddModifierSign(mod) + " " + type + "]";
             }
         },
         OpenJsonModal(e){                           // Opens the modal to modify the JSON
@@ -974,9 +974,9 @@ Vue.createApp({
 
                 // Format a stat line
                 if (this.encounter.settings.platform == "paizo-forum"){
-                    ilist += "[dice=Initiative " + creature.name + "]1d20+" + creature.init + "[/dice]\n";
+                    ilist += "[dice=Initiative " + creature.name + "]1d20" + this.AddModifierSign(creature.init) + "[/dice]\n";
                 } else {
-                    ilist += "[1d20+" + creature.init + " Initiative " + creature.name + "]\n";
+                    ilist += "[1d20" + this.AddModifierSign(creature.init) + " Initiative " + creature.name + "]\n";
                 }
             }
 
