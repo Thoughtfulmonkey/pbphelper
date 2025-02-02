@@ -1,4 +1,4 @@
-let buildnum = "import-001";
+let buildnum = "delete-001";
 
 // Display build number
 const builddiv = document.createElement("div");
