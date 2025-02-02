@@ -388,8 +388,14 @@ Vue.createApp({
 
                     attack.name = item.name;
                     attack.hit = item.toHit;
-                    attack.type = item.damage.damage[0];
-                    attack.damage = item.damage.dice.count + "d" + item.damage.dice.sides + this.AddModifierSign(item.damageBonus);
+
+                    if (item.damage == null){   // Not all weapons do damage. E.g., smoke bombs
+                        attack.type = "NA";
+                        attack.damage = 0;
+                    }else{
+                        attack.type = item.damage.damage[0];
+                        attack.damage = item.damage.dice.count + "d" + item.damage.dice.sides + this.AddModifierSign(item.damageBonus);
+                    }
                     attack.attacknotes = "";
 
                     if (item.range){
