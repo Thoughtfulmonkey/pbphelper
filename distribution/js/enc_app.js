@@ -19,7 +19,8 @@ Vue.createApp({
             enteringAttack: true,
             definingNewAttack: false,
             displayAttackNotes: true,
-            attackNotesToDisplay: "Test notes"
+            attackNotesToDisplay: "No notes",
+            filteredAttacks: []         // Attacks thats belong to the currently selected creature
         }
     },
     mounted () {
@@ -265,14 +266,36 @@ Vue.createApp({
 
             return attackParts
         },
+        BuildFilteredAttackList(cref){
+
+            console.log("before: " + cref);
+
+            // Check if one of a group of creatures
+            let parts = cref.split("-");
+            console.log(parts);
+            if (parts.length == 2){
+                cref = parts[0];
+            }
+
+            this.filteredAttacks = [];
+
+            // Search for attacks owner by the supplied creature
+            for (let i=0; i<this.encounter.attacks.length; i++){
+
+                if (cref == this.encounter.attacks[i].creature){
+
+                    this.filteredAttacks.push(this.encounter.attacks[i]);
+                }
+            }
+        },
         OpenActionModal(e){                         // Opens the modal to add an action
             this.actionID = e.target.id;
             let parts = this.actionID.split("-");
 
-            //$('#actionText').val(this.encounter.rounds[parts[1]-1].actors[parts[2]].action);
-
             let actionString = this.encounter.rounds[parts[1]-1].actors[parts[2]].action;
 
+            this.BuildFilteredAttackList(this.encounter.rounds[parts[1]-1].actors[parts[2]].id);
+            
             // Hide the new attack name field
             this.definingNewAttack = false;
 
@@ -303,7 +326,7 @@ Vue.createApp({
                 $('#attackType').val(attackParts.type);                
             }
             else {
-                 this.enteringAttack = false;
+                this.enteringAttack = false;
                 $('#attackToggle').prop('checked', false);
 
                 $('#actionText').val(actionString);
@@ -461,7 +484,8 @@ Vue.createApp({
         SelectAttack(e){                            // Handles dropdown selection
             let attackID = e.target.id;
             let attackParts = attackID.split("-");
-            let attackInfo = this.encounter.attacks[ attackParts[1] ];
+            //let attackInfo = this.encounter.attacks[ attackParts[1] ];
+            let attackInfo = this.filteredAttacks[ attackParts[1] ];
 
             $('#attackHit').val("1d20" + this.AddModifierSign(attackInfo.hit));
             $('#attackDamage').val(attackInfo.damage);
