@@ -19,7 +19,8 @@ Vue.createApp({
             enteringAttack: true,
             definingNewAttack: false,
             displayAttackNotes: true,
-            attackNotesToDisplay: "Test notes"
+            attackNotesToDisplay: "No notes",
+            filteredAttacks: []         // Attacks thats belong to the currently selected creature
         }
     },
     mounted () {
@@ -70,6 +71,9 @@ Vue.createApp({
 
             return(candidate);
         },
+        CopyToClipboard(str){                       // Copies text directly to clipboard
+            navigator.clipboard.writeText(str);
+        },
         isJsonString(str) {                         // Tests whether string is JSON
             try {
                 JSON.parse(str);
@@ -91,7 +95,7 @@ Vue.createApp({
                 return "" + number;
             }
         },
-        EncodedTargetToID(target){
+        EncodedTargetToID(target){                  // Extracts ID from a "(name|ID)" string
             targetID = "";
             if (target.indexOf("|")>-1){
                 targetID = target.substring( target.indexOf("|")+1 );
@@ -155,7 +159,7 @@ Vue.createApp({
                 $('#jsonErrorMessage').removeClass("invisible");
             }
         },
-        OpenCreatureModal(e){
+        OpenCreatureModal(e){                       // Opens and initialises the creature info modal
 
             let nameID = e.target.id;
             let parts = nameID.split("-");
@@ -186,7 +190,7 @@ Vue.createApp({
 
             $('#creatureModal').modal('show');
         },
-        CopySave(saveType){
+        CopySave(saveType){                         // Copy a save string to scratch pad (and clipboard)
 
             // Is there a saved ID?
             if (this.creatureInfoID != ""){
@@ -206,6 +210,7 @@ Vue.createApp({
                         break;
                 }
                 document.getElementById('scratchpadTextArea').value += rollText + "\n"
+                this.CopyToClipboard(rollText);
             }
         },
         CloseInfoModal(){
@@ -265,14 +270,36 @@ Vue.createApp({
 
             return attackParts
         },
+        BuildFilteredAttackList(cref){
+
+            console.log("before: " + cref);
+
+            // Check if one of a group of creatures
+            let parts = cref.split("-");
+            console.log(parts);
+            if (parts.length == 2){
+                cref = parts[0];
+            }
+
+            this.filteredAttacks = [];
+
+            // Search for attacks owner by the supplied creature
+            for (let i=0; i<this.encounter.attacks.length; i++){
+
+                if (cref == this.encounter.attacks[i].creature){
+
+                    this.filteredAttacks.push(this.encounter.attacks[i]);
+                }
+            }
+        },
         OpenActionModal(e){                         // Opens the modal to add an action
             this.actionID = e.target.id;
             let parts = this.actionID.split("-");
 
-            //$('#actionText').val(this.encounter.rounds[parts[1]-1].actors[parts[2]].action);
-
             let actionString = this.encounter.rounds[parts[1]-1].actors[parts[2]].action;
 
+            this.BuildFilteredAttackList(this.encounter.rounds[parts[1]-1].actors[parts[2]].id);
+            
             // Hide the new attack name field
             this.definingNewAttack = false;
 
@@ -303,7 +330,7 @@ Vue.createApp({
                 $('#attackType').val(attackParts.type);                
             }
             else {
-                 this.enteringAttack = false;
+                this.enteringAttack = false;
                 $('#attackToggle').prop('checked', false);
 
                 $('#actionText').val(actionString);
@@ -461,7 +488,7 @@ Vue.createApp({
         SelectAttack(e){                            // Handles dropdown selection
             let attackID = e.target.id;
             let attackParts = attackID.split("-");
-            let attackInfo = this.encounter.attacks[ attackParts[1] ];
+            let attackInfo = this.filteredAttacks[ attackParts[1] ];  // Use filtered list of character attacks
 
             $('#attackHit').val("1d20" + this.AddModifierSign(attackInfo.hit));
             $('#attackDamage').val(attackInfo.damage);
@@ -808,6 +835,7 @@ Vue.createApp({
             }
 
             document.getElementById('scratchpadTextArea').value += actionText + "\n"
+            this.CopyToClipboard(actionText);
         },
         FormatStatLineForum(isTheirTurn, stats, creature){
 
@@ -961,6 +989,7 @@ Vue.createApp({
             }
 
             document.getElementById('scratchpadTextArea').value += fstat + "\n"
+            this.CopyToClipboard(fstat);
         },
         CopyInitiativeToScratchpad(){
 
@@ -981,6 +1010,7 @@ Vue.createApp({
             }
 
             document.getElementById('scratchpadTextArea').value += ilist + "\n"
+            this.CopyToClipboard(ilist);
         },
         CopyCreatureInfoToScratchpad(){
 

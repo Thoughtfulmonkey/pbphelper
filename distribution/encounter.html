@@ -84,7 +84,7 @@
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="actionSelector">
                                   <a 
-                                    v-for="(attack, index) in encounter.attacks"
+                                    v-for="(attack, index) in filteredAttacks"
                                     :id="'att-' + index"
                                     class="dropdown-item" 
                                     href="#"
@@ -407,6 +407,6 @@
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
         <script src="./js/system.js"></script>
-        <script src="./js/enc_app.js?v=21"></script>
+        <script src="./js/enc_app.js?v=23"></script>
     </body>
 </html>
