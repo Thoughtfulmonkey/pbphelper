@@ -33,9 +33,16 @@
                   <div class="modal-body">
                     <textarea class="form-control" id="scratchpadTextArea" rows="20"></textarea>
                   </div>
-                  <div class="modal-footer">
-                      <button type="button" class="btn btn-danger" @click="ClearScratchpad">Clear</button>
+                  <div class="modal-footer" style="justify-content: space-between">
+                      <div>
+                        <button type="button" class="btn btn-secondary" @click="ScratchpadRemoveLinebreaks">
+                          <img src="./img/heroicons--arrow-turn-up-left-16-solid.svg" />
+                        </button>
+                      </div>
+                      <div>
+                        <button type="button" class="btn btn-danger me-1" @click="ClearScratchpad">Clear</button>
                       <button type="button" class="btn btn-primary" @click="CloseScratchpadModal">Close</button>
+                      </div>
                   </div>
                 </div>
               </div>
@@ -407,6 +414,6 @@
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
         <script src="./js/system.js"></script>
-        <script src="./js/enc_app.js?v=23"></script>
+        <script src="./js/enc_app.js?v=25"></script>
     </body>
 </html>

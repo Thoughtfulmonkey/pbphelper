@@ -1,4 +1,4 @@
-let buildnum = "filter-001";
+let buildnum = "style-001";
 
 // Display build number
 const builddiv = document.createElement("div");

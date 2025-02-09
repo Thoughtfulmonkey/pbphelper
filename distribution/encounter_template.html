@@ -232,11 +232,13 @@
 
             </div>
 
+            <hr  v-if="loaded"/>
+
             <h1 class="mb-3">
               {{encounter.templateName}}
             </h1>
 
-            <h2>Creatures</h2>
+            <h2 class="mt-4">Creatures</h2>
 
             <div class="card" v-for="(creature, index) in encounter.creatures">
                 <div class="card-header">
@@ -310,7 +312,7 @@
                   v-on:click="NewCreature">New Creature</button>
             </div>
 
-            <h2>Attacks</h2>
+            <h2 class="mt-4">Attacks</h2>
 
             <div class="card" v-for="(attack, index) in encounter.attacks">
                 <div class="card-header">

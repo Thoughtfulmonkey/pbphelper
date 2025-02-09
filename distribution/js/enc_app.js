@@ -816,6 +816,14 @@ Vue.createApp({
         CloseScratchpadModal(){                     // Closes the scratchpad
             $('#scratchpadModal').modal('hide');
         },
+        ScratchpadRemoveLinebreaks(){               // Remove line breaks
+
+            let text = document.getElementById('scratchpadTextArea').value;
+
+            text = text.replace(/(\r\n|\n|\r)/gm, " ");
+
+            document.getElementById('scratchpadTextArea').value = text;
+        },
         CopyActionToScratchpad(e){                  // Copies an action to the scratchpad
             let actionID = e.target.id;
             let parts = actionID.split("-");
