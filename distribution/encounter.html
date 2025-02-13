@@ -333,14 +333,14 @@
                     </thead>
                     <tbody>
                       <tr v-for="(creature, index) in encounter.stats">
-                        <td :id="'init-'+index" @click="NumRoller">{{creature.init}}</td>
-                        <td :id="'name-'+index" @click="OpenCreatureModal">{{creature.name}}</td>
-                        <td :id="'sp-'+index" @click="NumRoller">{{creature.sp}}<span class="max-stat"> /{{GetCreature(creature.ref).sp}}</span></td>
-                        <td :id="'hp-'+index" @click="NumRoller">{{creature.hp}}<span class="max-stat"> /{{GetCreature(creature.ref).hp}}</span></td>
-                        <td :id="'rp-'+index" @click="NumRoller">{{creature.rp}}<span class="max-stat"> /{{GetCreature(creature.ref).rp}}</span></td>
-                        <td :id="'eac-'+index" @click="NumRoller">{{creature.eac}}</td>
-                        <td :id="'kac-'+index" @click="NumRoller">{{creature.kac}}</td>
-                        <td :id="'note-'+index" @click="EditNote" class="hide-for-narrow">{{creature.notes}}</td>
+                        <td :data-ref="'init-'+index" @click="NumRoller">{{creature.init}}</td>
+                        <td :data-ref="'name-'+index" @click="OpenCreatureModal">{{creature.name}}</td>
+                        <td :data-ref="'sp-'+index" @click="NumRoller">{{creature.sp}}<span class="max-stat"> /{{GetCreature(creature.ref).sp}}</span></td>
+                        <td :data-ref="'hp-'+index" @click="NumRoller">{{creature.hp}}<span class="max-stat"> /{{GetCreature(creature.ref).hp}}</span></td>
+                        <td :data-ref="'rp-'+index" @click="NumRoller">{{creature.rp}}<span class="max-stat"> /{{GetCreature(creature.ref).rp}}</span></td>
+                        <td :data-ref="'eac-'+index" @click="NumRoller">{{creature.eac}}</td>
+                        <td :data-ref="'kac-'+index" @click="NumRoller">{{creature.kac}}</td>
+                        <td :data-ref="'note-'+index" @click="EditNote" class="hide-for-narrow">{{creature.notes}}</td>
                       </tr>
                     </tbody>
                 </table>
@@ -356,8 +356,8 @@
                   </thead>
                   <tbody>
                     <tr v-for="(creature, index) in encounter.stats">
-                      <td :id="'name-'+index" @click="OpenCreatureModal">{{creature.name}}</td>
-                      <td :id="'note-'+index" @click="EditNote">{{creature.notes}}</td>
+                      <td>{{creature.name}}</td>
+                      <td :data-ref="'note-'+index" @click="EditNote">{{creature.notes}}</td>
                     </tr>
                   </tbody>
               </table>
@@ -378,7 +378,7 @@
                     </thead>
                     <tbody>
                         <tr v-for="(actor, aindex) in round.actors">
-                            <td :id="'r' + round.num + 'init-'+aindex" @click="NumRoller">
+                            <td :data-ref="'r' + round.num + 'init-'+aindex" @click="NumRoller">
                               {{actor.init}}
                             </td>
                             <td><strong class="me-2">{{actor.name}}</strong></td>
@@ -431,6 +431,6 @@
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
         <script src="./js/system.js"></script>
-        <script src="./js/enc_app.js?v=25"></script>
+        <script src="./js/enc_app.js?v=26"></script>
     </body>
 </html>
