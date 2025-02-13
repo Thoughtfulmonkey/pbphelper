@@ -1,3 +1,29 @@
+body{
+    background-color: #f8f9fa;
+}
+
+@media only screen and (max-width: 383px) {
+    .first-option{
+        margin-bottom: 3px;
+    }
+}
+
+@media only screen and (max-width: 440px) {
+    .hide-for-narrow{
+        display: none;
+    }
+}
+
+@media only screen and (min-width: 440px) {
+    .hide-for-wide{
+        display: none;
+    }
+}
+
+.first-option{
+    margin-right: 3px;
+}
+
 
 .big-gap{
     margin-top: 30px;
@@ -24,10 +50,6 @@
 
 .float-right{
     float:right;
-}
-
-.small-right-margin{
-    margin-right: 3px;
 }
 
 .cell-highlight{

@@ -161,7 +161,8 @@ Vue.createApp({
         },
         OpenCreatureModal(e){                       // Opens and initialises the creature info modal
 
-            let nameID = e.target.id;
+            //let nameID = e.target.id;
+            let nameID = e.target.dataset.ref;
             let parts = nameID.split("-");
             let idNum = Number(parts[1]);
 
@@ -677,7 +678,7 @@ Vue.createApp({
             return reformed;
         },
         NumRoller(e){                               // Handles selection of a number for modification             
-            let numID = e.target.id;
+            let numID = e.target.dataset.ref;
 
             let numName = this.lastHighlighted.substring(0, this.lastHighlighted.indexOf("-"));
             //let numIndex = Number(this.lastHighlighted.substring(numName.length+1));
@@ -760,7 +761,7 @@ Vue.createApp({
             }
         },
         EditNote(e){
-            this.noteID = e.target.id;
+            this.noteID = e.target.dataset.ref;
             let parts = this.noteID.split("-");
 
             $('#noteTextArea').val(this.encounter.stats[parts[1]].notes);
@@ -815,6 +816,14 @@ Vue.createApp({
         },
         CloseScratchpadModal(){                     // Closes the scratchpad
             $('#scratchpadModal').modal('hide');
+        },
+        ScratchpadRemoveLinebreaks(){               // Remove line breaks
+
+            let text = document.getElementById('scratchpadTextArea').value;
+
+            text = text.replace(/(\r\n|\n|\r)/gm, " ");
+
+            document.getElementById('scratchpadTextArea').value = text;
         },
         CopyActionToScratchpad(e){                  // Copies an action to the scratchpad
             let actionID = e.target.id;
