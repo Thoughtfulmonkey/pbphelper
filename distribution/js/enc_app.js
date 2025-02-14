@@ -9,7 +9,7 @@ Vue.createApp({
             encounter: {},              // The main JSON
             actionID: "",               // Stores the ID when an action is edited
             noteID: "",                 // Stores the ID when a note is edited
-            lastHighlighted: "",        // Stores the ID of the table cell currently highlighted
+            lastHighlighted: null,      // Stores the ID of the table cell currently highlighted
             creatureInfoID: "",         // ID of the last creature whose info was displayed in the modal
             sep: "==",                  // Seperator for encoded actions
             targetVar: ":target:",      // Variable for the target - to be replaced
@@ -679,43 +679,52 @@ Vue.createApp({
         },
         NumRoller(e){                               // Handles selection of a number for modification             
             let numID = e.target.dataset.ref;
+            let selected = e.target;
 
-            let numName = this.lastHighlighted.substring(0, this.lastHighlighted.indexOf("-"));
-            //let numIndex = Number(this.lastHighlighted.substring(numName.length+1));
+            if (numID){ // Only proceed if a UI element with a ref data attribute is selected
 
-            // Click on same cell to deselect
-            if (this.lastHighlighted == numID){
+                // Click on same cell to deselect
+                if (this.lastHighlighted == selected){
 
-                $("#"+this.lastHighlighted).removeClass("cell-highlight");
-                this.lastHighlighted = "";
+                    let numName = selected.dataset.ref.substring(0, selected.dataset.ref.indexOf("-"));
+                    
+                    //$("#"+this.lastHighlighted).removeClass("cell-highlight");
+                    this.lastHighlighted.classList.remove("cell-highlight");
+                    this.lastHighlighted = null;
 
-                // TODO: reorder the correct table; use flag, move to end of funciton, and remove duplication
-                if (numName == "init") this.ReorderForInitiative(this.encounter.stats);
-                else if (numName.indexOf("init")>-1){
-                    roundNum = Number(numName.substring(1, numName.indexOf("init"))) - 1;
-                    this.ReorderForInitiative(this.encounter.rounds[roundNum].actors);
-                }
-
-            } else {
-
-                // Deselect to switch selection
-                if (this.lastHighlighted != ""){
-                    $("#"+this.lastHighlighted).removeClass("cell-highlight");
-
+                    // TODO: reorder the correct table; use flag, move to end of funciton, and remove duplication
                     if (numName == "init") this.ReorderForInitiative(this.encounter.stats);
                     else if (numName.indexOf("init")>-1){
                         roundNum = Number(numName.substring(1, numName.indexOf("init"))) - 1;
                         this.ReorderForInitiative(this.encounter.rounds[roundNum].actors);
                     }
-                }
 
-                // New selection
-                $("#"+numID).addClass("cell-highlight");
-                this.lastHighlighted = numID;
+                } else {
+
+                    // Deselect to switch selection
+                    if (this.lastHighlighted != null){
+
+                        let numName = this.lastHighlighted.dataset.ref.substring(0, this.lastHighlighted.dataset.ref.indexOf("-"));
+
+                        //$("#"+this.lastHighlighted).removeClass("cell-highlight");
+                        this.lastHighlighted.classList.remove("cell-highlight");
+
+                        if (numName == "init") this.ReorderForInitiative(this.encounter.stats);
+                        else if (numName.indexOf("init")>-1){
+                            roundNum = Number(numName.substring(1, numName.indexOf("init"))) - 1;
+                            this.ReorderForInitiative(this.encounter.rounds[roundNum].actors);
+                        }
+                    }
+
+                    // New selection
+                    //$("#"+numID).addClass("cell-highlight");
+                    e.target.classList.add("cell-highlight");
+                    this.lastHighlighted = selected;
+                }
             }
         },
         ScrollNumber(e){                            // Handles incrememnt / decrement of selected number
-            if (this.lastHighlighted != ""){
+            if (this.lastHighlighted != null){
 
                 let key = e.key;
 
@@ -725,8 +734,8 @@ Vue.createApp({
                     let jsonBlock = null;
                     let param = "";
 
-                    let numName = this.lastHighlighted.substring(0, this.lastHighlighted.indexOf("-"));
-                    let numIndex = Number(this.lastHighlighted.substring(numName.length+1));
+                    let numName = this.lastHighlighted.dataset.ref.substring(0, this.lastHighlighted.dataset.ref.indexOf("-"));
+                    let numIndex = Number(this.lastHighlighted.dataset.ref.substring(numName.length+1));
                     
                     // Choosing the right section
                     if (numName == "init"){
