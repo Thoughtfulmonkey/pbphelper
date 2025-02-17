@@ -102,3 +102,21 @@ body{
 .with-options{
     justify-content: space-between !important;
 }
+
+.action-cell{
+    clear: both;
+    margin-bottom: 4px;
+    overflow: auto;
+}
+
+.action-icon{
+    float: left;
+}
+
+.action-description{
+    float: left;
+}
+
+.action-buttons{
+    float: right;
+}

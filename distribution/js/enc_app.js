@@ -297,7 +297,10 @@ Vue.createApp({
             this.actionID = e.target.id;
             let parts = this.actionID.split("-");
 
-            let actionString = this.encounter.rounds[parts[1]-1].actors[parts[2]].action;
+            let actions = this.encounter.rounds[parts[1]-1].actors[parts[2]].action;
+            let actionString = actions[parts[3]].desc;
+
+            console.log(actionString);
 
             this.BuildFilteredAttackList(this.encounter.rounds[parts[1]-1].actors[parts[2]].id);
             
@@ -403,6 +406,8 @@ Vue.createApp({
 
                     if (targetObj != null){
 
+                        console.log("Not null target");
+
                         if (this.eacList.includes(type)){
                             if (hitRollNum>=targetObj.eac){
                                 result = "hit";
@@ -430,6 +435,7 @@ Vue.createApp({
                 }
 
             }
+            console.log("Result " + result);
 
             return result;
         },
@@ -448,11 +454,12 @@ Vue.createApp({
 
                     console.log(actionString);
 
-                    this.encounter.rounds[parts[1]-1].actors[parts[2]].action = actionString;
+                    //Update action string
+                    this.encounter.rounds[parts[1]-1].actors[parts[2]].action[parts[3]].desc = actionString;
 
                     // Determine a result - hit / miss / etc. TODO: only if no current result
                     if (this.IsValidAttack(actionString)){
-                        this.encounter.rounds[parts[1]-1].actors[parts[2]].result = this.CheckResult(actionString);
+                        this.encounter.rounds[parts[1]-1].actors[parts[2]].action[parts[3]].result = this.CheckResult(actionString);
                     }
 
                     // Save if new attack
@@ -464,7 +471,7 @@ Vue.createApp({
                     console.log("Not attack toggle");
 
                     // Generic action
-                    this.encounter.rounds[parts[1]-1].actors[parts[2]].action = $('#actionText').val();
+                    this.encounter.rounds[parts[1]-1].actors[parts[2]].action[parts[3]].desc = $('#actionText').val();
                 }
 
                 // Note unsaved data
@@ -472,6 +479,26 @@ Vue.createApp({
             }
 
             $('#actionModal').modal('hide');
+        },
+        AddActionForCreature(e){                    // Adds another action for the creature in chosen round
+            let parts = e.target.id.split("-");
+
+            let actionObj = {};
+            actionObj.desc = "";
+            actionObj.type = "";
+            actionObj.result = null;
+
+            this.encounter.rounds[parts[1]-1].actors[parts[2]].action.push(actionObj);
+        },
+        RemoveAction(){                             // Request to remove action
+            if (this.editID != ""){
+
+                let parts = this.actionID.split("-");
+
+                this.encounter.rounds[parts[1]-1].actors[parts[2]].action.splice(parts[3],1);
+
+                $('#actionModal').modal('hide');
+            }
         },
         FormatAttackObject(obj){                    // Formats an attack obj from JSON into a string
 
@@ -807,8 +834,13 @@ Vue.createApp({
                 actor.id = this.encounter.stats[i].id;
                 actor.init = this.encounter.stats[i].init;
                 actor.name = this.encounter.stats[i].name;
-                actor.action = "";
-                actor.result = "";
+
+                actor.action = [];
+                let actionObj = {};
+                actionObj.desc = "";
+                actionObj.type = "";
+                actionObj.result = null;
+                actor.action.push(actionObj);
 
                 // Don't add actor if initiative is zero
                 if (actor.init>0) round.actors.push(actor);
@@ -838,7 +870,7 @@ Vue.createApp({
             let actionID = e.target.id;
             let parts = actionID.split("-");
 
-            let actionText = this.encounter.rounds[parts[1]-1].actors[parts[2]].action;
+            let actionText = this.encounter.rounds[parts[1]-1].actors[parts[2]].action[parts[3]].desc;
             let attacker = this.encounter.rounds[parts[1]-1].actors[parts[2]].name;
             let attacker_id = this.encounter.rounds[parts[1]-1].actors[parts[2]].id;
 

@@ -1,4 +1,4 @@
-let buildnum = "style-001";
+let buildnum = "multi-001";
 
 // Display build number
 const builddiv = document.createElement("div");
