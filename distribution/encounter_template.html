@@ -157,7 +157,16 @@
                               </div>
                               <div class="col-sm">
                                 <label>Type: </label>
-                                <input type="text" class="form-control" id="attackType">
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="typeDropdownButton" data-bs-toggle='dropdown' aria-haspopup="true" aria-expanded="false">
+                                      Damage type
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="typeDropdownButton">
+                                      <a v-for="(damageOption, index) in damageData" class="dropdown-item" href="#" @click="ChooseDamageOption(damageOption.long)">
+                                        {{damageOption.long}}
+                                      </a>
+                                    </div>
+                                </div>
                               </div>
                             </div>
                         </div>
@@ -370,6 +379,6 @@
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
         <script src="./js/system.js"></script>
-        <script src="./js/enc_temp_app.js?v=20"></script>
+        <script type="module" src="./js/enc_temp_app.js?v=22"></script>
     </body>
 </html>

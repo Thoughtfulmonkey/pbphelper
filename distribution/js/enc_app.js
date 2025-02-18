@@ -1,3 +1,5 @@
+import * as damage from './damage.js'
+
 Vue.createApp({
     data() {
         return{
@@ -15,6 +17,7 @@ Vue.createApp({
             targetVar: ":target:",      // Variable for the target - to be replaced
             eacList: ['A', 'C', 'E', 'F', 'So'],    // List of energy damage
             kacList: ['B', 'P', 'S'],               // List of kinetic damage
+            damageData: damage.types,   // Imported damage data
             unsaved: false,             // Set to true when things change and false after a save
             enteringAttack: true,
             definingNewAttack: false,
@@ -27,6 +30,8 @@ Vue.createApp({
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         this.encounterId = urlParams.get('enc');
+
+        console.log(damage.types[0]);
 
         // Load an encounter if 
         if (this.encounterId === null){
@@ -116,7 +121,11 @@ Vue.createApp({
             } 
             encodedString += $('#attackTarget').val() + this.sep;
             encodedString += $('#attackHit').val() + this.sep;
-            encodedString += $('#attackDamage').val() + " " + $('#attackType').val() + this.sep;
+
+            // Get short code for attack type
+            let attackType = this.LookUpAttackShortCode( $('#typeDropdownButton').text() );
+
+            encodedString += $('#attackDamage').val() + " " + attackType + this.sep;
 
             return encodedString;
         },
@@ -331,7 +340,10 @@ Vue.createApp({
                     $('#attackHit').val("1d20" + this.AddModifierSign(attackParts.hitMod));
                 }
                 $('#attackDamage').val(attackParts.damage);
-                $('#attackType').val(attackParts.type);                
+                
+                // Set damage type
+                //$('#attackType').val(attackParts.type); 
+                $('#typeDropdownButton').text(this.LookUpAttackLongCode(attackParts.type));               
             }
             else {
                 this.enteringAttack = false;
@@ -347,6 +359,25 @@ Vue.createApp({
         },
         ToggleAttackEntry(e){                       // Toggles UI between entering an attack and generic action
             this.enteringAttack = e.target.checked;
+        },
+        ChooseDamageOption(damageName){                         // Set the damage dropdown button  
+            $('#typeDropdownButton').text(damageName);
+        },
+        LookUpAttackShortCode(longCode){                        // Convert damage longCode to shortCode
+            for (let i=0; i<this.damageData.length; i++){
+                if (longCode == this.damageData[i].long){
+                    return this.damageData[i].short;
+                }
+            }
+            return "";
+        },
+        LookUpAttackLongCode(shortCode){                        // Convert damage shortCode to longCode
+            for (let i=0; i<this.damageData.length; i++){
+                if (shortCode == this.damageData[i].short){
+                    return this.damageData[i].long;
+                }
+            }
+            return "";
         },
         GetStatRefFromID(id){                       // Retrieves the stat JSON section for a given ID
             for (let i=0; i< this.encounter.stats.length; i++){
@@ -377,13 +408,11 @@ Vue.createApp({
             }
         },
         CheckResult(attack){                        // Set a result based a to-hit roll
-            let result = "";
+            let result = null;
             let parts = attack.split(this.sep);
 
             let target = parts[1];
             let hitRoll = parts[2];
-
-            console.log("Targetting " + target + " with " + hitRoll);
 
             // Only process a result if the hit roll is a number
             if (!isNaN(Number(hitRoll))){
@@ -399,14 +428,10 @@ Vue.createApp({
                     let targetID = target.substring( target.indexOf("|")+1 );
                     targetID = targetID.substring( 0, targetID.length-1 );
 
-                    console.log("Target ID: " + targetID);
-
                     // Get ref to target
-                    targetObj = this.GetStatRefFromID(targetID);
+                    let targetObj = this.GetStatRefFromID(targetID);
 
                     if (targetObj != null){
-
-                        console.log("Not null target");
 
                         if (this.eacList.includes(type)){
                             if (hitRollNum>=targetObj.eac){
@@ -435,7 +460,6 @@ Vue.createApp({
                 }
 
             }
-            console.log("Result " + result);
 
             return result;
         },
@@ -447,8 +471,6 @@ Vue.createApp({
 
                 // Entering an attack?
                 if ($('#attackToggle').is(':checked')){
-
-                    console.log("attack toggle");
 
                     let actionString = this.AttackFieldsToEncodedString();
 
@@ -520,9 +542,10 @@ Vue.createApp({
 
             $('#attackHit').val("1d20" + this.AddModifierSign(attackInfo.hit));
             $('#attackDamage').val(attackInfo.damage);
-            $('#attackType').val(attackInfo.type);
-
             $('#actionSelector').text(attackInfo.name);
+
+            // Set damage type
+            $('#typeDropdownButton').text(this.LookUpAttackLongCode(attackInfo.type));
 
             // Display note, if there is one for this attack
             if (attackInfo.attacknotes){

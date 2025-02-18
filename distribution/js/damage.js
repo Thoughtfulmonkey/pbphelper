@@ -1,46 +1,42 @@
-export let damageTypes = [
+export let types = [
     {
         "long":"Acid",
         "short":"A",
-        "target":""
+        "target":"EAC"
     },
     {
         "long":"Cold",
         "short":"C",
-        "target":""
+        "target":"EAC"
     },
     {
         "long":"Electricity",
         "short":"E",
-        "target":""
+        "target":"EAC"
     },
     {
         "long":"Fire",
         "short":"F",
-        "target":""
+        "target":"EAC"
     },
     {
         "long":"Sonic",
         "short":"So",
-        "target":""
+        "target":"EAC"
     },
     {
         "long":"Bludgeoning",
         "short":"B",
-        "target":""
+        "target":"KAC"
     },
     {
         "long":"Piercing",
         "short":"P",
-        "target":""
+        "target":"KAC"
     },
     {
         "long":"Slashing",
         "short":"S",
-        "target":""
-    },
+        "target":"KAC"
+    }
 ];
-
-
-//eacList: ['A', 'C', 'E', 'F', 'So'],    // List of energy damage
-//kacList: ['B', 'P', 'S'],               // List of kinetic damage
