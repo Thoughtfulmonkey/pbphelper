@@ -115,14 +115,6 @@
                     <input type="text" class="form-control" id="dbAddress" name="dbAddress" aria-describedby="dbAddressLabel" placeholder="localhost">
                 </div>
                 <div class="form-group">
-                    <label for="dbUserLabel">User</label>
-                    <input type="text" class="form-control" id="dbUser" name="dbUser" aria-describedby="dbUserLabel" placeholder="User name">
-                </div>
-                <div class="form-group">
-                    <label for="dbPasswordLabel">Password</label>
-                    <input type="text" class="form-control" id="dbPassword" name="dbPassword" aria-describedby="dbPasswordLabel" placeholder="Password">
-                </div>
-                <div class="form-group">
                     <label for="dbNameLabel">Database name</label>
                     <input type="text" class="form-control" id="dbName" name="dbName" aria-describedby="dbNameLabel" placeholder="Database name">
                 </div>
@@ -130,7 +122,15 @@
                     <label for="dbPrefixLabel">Table prefix</label>
                     <input type="text" class="form-control" id="dbPrefix" name="dbPrefix" aria-describedby="dbPrefixLabel" placeholder="Leave blank if none">
                 </div>
-
+                <div class="form-group">
+                    <label for="dbUserLabel">User</label>
+                    <input type="text" class="form-control" id="dbUser" name="dbUser" aria-describedby="dbUserLabel" placeholder="User name">
+                </div>
+                <div class="form-group">
+                    <label for="dbPasswordLabel">Password</label>
+                    <input type="text" class="form-control" id="dbPassword" name="dbPassword" aria-describedby="dbPasswordLabel" placeholder="Password">
+                </div>
+                
                 <h2>Settings</h2>
 
                 <div class="form-group">
