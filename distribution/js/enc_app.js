@@ -591,7 +591,7 @@ Vue.createApp({
             for(let i=0; i<this.encounter.rounds[roundRef].actors.length; i++){
                 if (this.encounter.rounds[roundRef].actors[i].id == creatureRef){
 
-                    if (this.encounter.rounds[roundRef].actors[i].action == ""){    // Is the action empty?
+                    if (this.encounter.rounds[roundRef].actors[i].action[0].desc == ""){    // Is the action empty?
                         return false;
                     }
                     else{
@@ -853,7 +853,7 @@ Vue.createApp({
             // Loop over the stats to add actors
             for (let i=0; i<this.encounter.stats.length; i++){
 
-                actor = {};
+                let actor = {};
                 actor.id = this.encounter.stats[i].id;
                 actor.init = this.encounter.stats[i].init;
                 actor.name = this.encounter.stats[i].name;
@@ -912,7 +912,7 @@ Vue.createApp({
         },
         FormatStatLineForum(isTheirTurn, stats, creature){
 
-            statline = "";
+            let statline = "";
 
             // Formatting in block
             if (isTheirTurn) statline += "➤ ";
@@ -961,7 +961,7 @@ Vue.createApp({
             return text;
         },
         FillChars(char, count){
-            text = "";
+            let text = "";
             for (let i=0; i<=count; i++){
                 text = text + char;
             }
@@ -969,7 +969,7 @@ Vue.createApp({
         },
         FormatStatLineDiscordSage(isTheirTurn, stats, creature, namePad){
 
-            statline = "";
+            let statline = "";
 
             let init = "" + stats.init;
             if (isTheirTurn) init = ">" + init;
@@ -984,7 +984,7 @@ Vue.createApp({
             if (creature.sp == 0){
 
                 statline += this.PadToCharsR("", 7);
-                statline += this.PadToCharsL((stats.hp - creature.hp)+"  ", 7);
+                statline += this.PadToCharsR((stats.hp - creature.hp)+"  ", 7);
                 statline += this.PadToCharsR("", 7);
             }
             else {

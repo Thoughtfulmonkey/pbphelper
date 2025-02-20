@@ -7,6 +7,9 @@ require './bumpcheck.php';
 
 $debugReturn = '';
 
+// Version number for encounter json
+$version = "en-0.1";
+
 // https://stackoverflow.com/questions/6041741/fastest-way-to-check-if-a-string-is-json-in-php
 function isJson($string) {
     json_decode($string);
@@ -182,6 +185,9 @@ if ( isJson($postdata) ){
 
         $encounter = new stdClass();
     
+        // Set JSON structure version
+        $encounter->version = $version;
+
         // Json to PHP object
         $templateObj = json_decode($teamData[0]['json']);
         $teamObj = json_decode($templateData[0]['json']);

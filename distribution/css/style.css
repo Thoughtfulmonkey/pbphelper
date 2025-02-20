@@ -115,6 +115,9 @@ body{
 
 .action-description{
     float: left;
+    border-left: 8px solid #ddd;
+    padding-left: 5px;
+    min-height: 24px;
 }
 
 .action-buttons{
