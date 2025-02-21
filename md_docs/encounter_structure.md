@@ -1,64 +1,128 @@
 # Encounter structure
 
-*version: tm-0.1*
+*version: en-0.1*
 
 An encounter includes the following data:
 
-* side: Either "pc" for teams, or "enemy" for encounter templates.
-* maxId: Used to simplify the generation of IDs for creatures.
 * version: Identifies the version of the JSON structure.
-* templateName: The name of the encounter template or team.
-* attacks: An array of attack objects
-* creatures: An array of creature objects
+* Settings: An object to store encounter settings.
+* stats: An array of stat table objects.
+* rounds: An array of round objects.
+* attacks: An array of attacks. Copied from the template, and identical to the structure described in [Template structure](./template_structure.md).
+* creatures: An array of creatures. Copied from the template, and identical to the structure described in [Template structure](./template_structure.md).
 
-Attacks include the following data:
+A stat table object includes the following data:
 
-**Note**: In the current version, numerical values are stored as strings in an attack object.
-
-* id: A unique ID for the attack.
-* hit: To hit modifier.
-* name: Name of the attack.
-* note: Unused.
-* type: Abbreviated version of the damage type. Only one type is supported.
-* class: "Melee" or "Ranged". Not used.
-* range: Attack range in feet. Not used.
-* damage: Damage dice and modifier.
-* creature: ID of the creature that owns the attack.
-* attacknotes: Free text field to enter notes about the attack. Displayed when the attack is selected.
-
-Creatures include the following data:
-
-* id: Creature ID
-* hp: Hit points
-* rp: Resolve points
-* sp: Stamina points
+* id: The creature's ID. Unique in the encounter.
+* hp: Current hit points of the creature.
+* sp: Current stamina points of the creature.
+* rp: Current resolve points of the creature.
 * eac: Energy AC
 * kac: Kinetic AC
-* ref: Reflex save
-* fort: Fortitude save
-* will: Will save
-* init: Initiative modifier
-* name: Name of the creature.
-* quantity: How many of this creature are in the encounter.
-* creaturenotes: Free text field to enter notes about the creature.
-* moves: An array of movement objects. Each with a type and speed.
+* ref: Creature reference. Used to cover situations when there are multiple creatures of the same type.
+* init: Current initiative in the encounter.
+* type: "pc" or "enemy"
+* creaturenotes: Free text field to add notes about the creature.
 
+## Rounds
 
-# Example JSON
+Rounds are stored in an array. 
+
+Each round is itself an array, with an entry for each "actor" - each creature in the encounter, both PCs and enemies.
+
+For each creature in each round, there is an array of action objects. The main component of each action is the description.
+
+## Example JSON
 
     {
-        "side": "enemy",
-        "maxId": 1,
-        "version": "tm-0.1",
-        "templateName": "Template name",
+        "version": "en-0.1",
+        "settings": {
+            "platform": "paizo-forum"
+        },
+        "stats": [
+            {
+                "hp": 10,
+                "id": "e1-1",
+                "rp": 0,
+                "sp": 0,
+                "eac": 10,
+                "kac": 10,
+                "ref": "e1",
+                "init": 5,
+                "name": "Enemy name",
+                "type": "enemy",
+                "creaturenotes": ""
+            },
+            {
+                "hp": 10,
+                "id": "pc1",
+                "rp": 10,
+                "sp": 5,
+                "eac": 10,
+                "kac": 10,
+                "ref": "pc1",
+                "init": 5,
+                "name": "PC name",
+                "type": "pc",
+                "creaturenotes": ""
+            }
+        ],
+        "rounds": [
+            {
+                "num": 1,
+                "actors": [
+                    {
+                        "id": "e1-1",
+                        "init": 2,
+                        "name": "Enemy name",
+                        "action": [
+                            {
+                                "desc": "Some action",
+                                "type": "",
+                                "result": null
+                            }
+                        ]
+                    },
+                    {
+                        "id": "pc1",
+                        "init": 1,
+                        "name": "PC name",
+                        "action": [
+                            {
+                                "desc": "PC's action",
+                                "type": "",
+                                "result": null
+                            },
+                            {
+                                "desc": "Gun==(Enemy name|e1-1)==1d20+4==1d8 P==",
+                                "type": "",
+                                "result": null
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
         "attacks": [
             {
-                "id": "abc12",
-                "hit": "5",
+                "id": "8um88",
+                "hit": "4",
+                "name": "Gun",
+                "note": "",
+                "type": "P",
+                "class": "Ranged",
+                "range": "30",
+                "damage": "1d8",
+                "creature": "pc1",
+                "attacknotes": ""
+            },
+            {
+                "id": "6xsn4",
+                "hit": "4",
                 "name": "Scratch",
                 "note": "",
-                "type": "A/C/E/F/So/B/P/S",
-                "class": "Melee/Ranged",
+                "type": "S",
+                "class": "Melee",
                 "range": "5",
                 "damage": "1d6",
                 "creature": "e1",
@@ -68,16 +132,37 @@ Creatures include the following data:
         "creatures": [
             {
                 "hp": 10,
+                "id": "pc1",
+                "rp": 10,
+                "sp": 5,
+                "eac": 10,
+                "kac": 10,
+                "ref": 5,
+                "fort": 5,
+                "init": 5,
+                "name": "PC name",
+                "will": 5,
+                "moves": [
+                    {
+                        "type": "land",
+                        "speed": 30
+                    }
+                ],
+                "quantity": 1,
+                "creaturenotes": ""
+            },
+            {
+                "hp": 10,
                 "id": "e1",
                 "rp": 0,
                 "sp": 0,
                 "eac": 10,
                 "kac": 10,
-                "ref": 2,
-                "fort": 2,
-                "init": 2,
-                "name": "Creature Name",
-                "will": 0,
+                "ref": 5,
+                "fort": 5,
+                "init": 5,
+                "name": "Enemy name",
+                "will": 5,
                 "moves": [
                     {
                         "type": "land",
