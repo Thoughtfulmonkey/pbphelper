@@ -1,3 +1,5 @@
+import * as damage from './damage.js'
+
 Vue.createApp({
     data() {
         return{
@@ -14,7 +16,8 @@ Vue.createApp({
             unsaved: false,             // True when there is unsaved data
             side: "",                   // "pc" or "enemy"
             importedCreature: {},       // Stores an imported creature, waiting for confirmation
-            importedAttacks: []         // An array of imported attacks
+            importedAttacks: [],        // An array of imported attacks
+            damageData: damage.types    // Imported damage data
         }
     },
     mounted () {
@@ -216,8 +219,9 @@ Vue.createApp({
             $('#attackHit').val("");
             $('#classDropdown').text("Choose class");
             $('#attackDamage').val("");
-            $('#attackType').val("");
             $('#attackNotes').val("");
+
+            this.ChooseDamageOption("Damage type");
 
             $('#attackModal').modal('show');
         },
@@ -239,8 +243,10 @@ Vue.createApp({
             $('#attackRange').val(a.range);
             $('#attackHit').val(a.hit);
             $('#attackDamage').val(a.damage);
-            $('#attackType').val(a.type);
             $('#attackNotes').val(a.attacknotes);
+
+            // Attack type
+            $('#typeDropdownButton').text(this.LookUpAttackLongCode(a.type));
 
             // Set dropdown text
             if (a.class="melee") $('#classDropdown').text("Melee");
@@ -250,6 +256,25 @@ Vue.createApp({
         },
         CloseAttack(){
             $('#attackModal').modal('hide');
+        },
+        ChooseDamageOption(damageName){                         // Set the damage dropdown button  
+            $('#typeDropdownButton').text(damageName);
+        },
+        LookUpAttackShortCode(longCode){                        // Convert damage longCode to shortCode
+            for (let i=0; i<this.damageData.length; i++){
+                if (longCode == this.damageData[i].long){
+                    return this.damageData[i].short;
+                }
+            }
+            return "";
+        },
+        LookUpAttackLongCode(shortCode){                        // Convert damage shortCode to longCode
+            for (let i=0; i<this.damageData.length; i++){
+                if (shortCode == this.damageData[i].short){
+                    return this.damageData[i].long;
+                }
+            }
+            return "";
         },
         SaveAttack(){
 
@@ -274,9 +299,11 @@ Vue.createApp({
             attackBlockRef.range = $('#attackRange').val();
             attackBlockRef.hit = $('#attackHit').val();
             attackBlockRef.damage = $('#attackDamage').val();
-            attackBlockRef.type = $('#attackType').val();
             attackBlockRef.attacknotes = $('#attackNotes').val();
             attackBlockRef.creature = this.ownerId;
+
+            // Add attack type
+            attackBlockRef.type = this.LookUpAttackShortCode( $('#typeDropdownButton').text() );
 
             // Note unsaved date
             this.unsaved = true;

@@ -50,7 +50,7 @@ if ( isJson($postdata) ){
         $jsonData = json_decode($postdata, true);
         $name = $jsonData['name'];
         $side = $jsonData['side'];
-        $json = '{"templateName":"'.$name.'","side":"'.$side.'","maxId":0,"creatures":[],"attacks":[]}';
+        $json = '{"templateName":"'.$name.'","side":"'.$side.'","maxId":0,"version":"tm-0.1","creatures":[],"attacks":[]}';
 
         // Validation
         if ( ($name!="") && ($side=="enemy" || $side="pc") ){

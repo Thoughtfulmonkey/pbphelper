@@ -1,3 +1,5 @@
+import * as damage from './damage.js'
+
 Vue.createApp({
     data() {
         return{
@@ -15,6 +17,7 @@ Vue.createApp({
             targetVar: ":target:",      // Variable for the target - to be replaced
             eacList: ['A', 'C', 'E', 'F', 'So'],    // List of energy damage
             kacList: ['B', 'P', 'S'],               // List of kinetic damage
+            damageData: damage.types,   // Imported damage data
             unsaved: false,             // Set to true when things change and false after a save
             enteringAttack: true,
             definingNewAttack: false,
@@ -27,6 +30,8 @@ Vue.createApp({
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         this.encounterId = urlParams.get('enc');
+
+        console.log(damage.types[0]);
 
         // Load an encounter if 
         if (this.encounterId === null){
@@ -116,7 +121,11 @@ Vue.createApp({
             } 
             encodedString += $('#attackTarget').val() + this.sep;
             encodedString += $('#attackHit').val() + this.sep;
-            encodedString += $('#attackDamage').val() + " " + $('#attackType').val() + this.sep;
+
+            // Get short code for attack type
+            let attackType = this.LookUpAttackShortCode( $('#typeDropdownButton').text() );
+
+            encodedString += $('#attackDamage').val() + " " + attackType + this.sep;
 
             return encodedString;
         },
@@ -297,7 +306,10 @@ Vue.createApp({
             this.actionID = e.target.id;
             let parts = this.actionID.split("-");
 
-            let actionString = this.encounter.rounds[parts[1]-1].actors[parts[2]].action;
+            let actions = this.encounter.rounds[parts[1]-1].actors[parts[2]].action;
+            let actionString = actions[parts[3]].desc;
+
+            console.log(actionString);
 
             this.BuildFilteredAttackList(this.encounter.rounds[parts[1]-1].actors[parts[2]].id);
             
@@ -328,7 +340,10 @@ Vue.createApp({
                     $('#attackHit').val("1d20" + this.AddModifierSign(attackParts.hitMod));
                 }
                 $('#attackDamage').val(attackParts.damage);
-                $('#attackType').val(attackParts.type);                
+                
+                // Set damage type
+                //$('#attackType').val(attackParts.type); 
+                $('#typeDropdownButton').text(this.LookUpAttackLongCode(attackParts.type));               
             }
             else {
                 this.enteringAttack = false;
@@ -344,6 +359,25 @@ Vue.createApp({
         },
         ToggleAttackEntry(e){                       // Toggles UI between entering an attack and generic action
             this.enteringAttack = e.target.checked;
+        },
+        ChooseDamageOption(damageName){                         // Set the damage dropdown button  
+            $('#typeDropdownButton').text(damageName);
+        },
+        LookUpAttackShortCode(longCode){                        // Convert damage longCode to shortCode
+            for (let i=0; i<this.damageData.length; i++){
+                if (longCode == this.damageData[i].long){
+                    return this.damageData[i].short;
+                }
+            }
+            return "";
+        },
+        LookUpAttackLongCode(shortCode){                        // Convert damage shortCode to longCode
+            for (let i=0; i<this.damageData.length; i++){
+                if (shortCode == this.damageData[i].short){
+                    return this.damageData[i].long;
+                }
+            }
+            return "";
         },
         GetStatRefFromID(id){                       // Retrieves the stat JSON section for a given ID
             for (let i=0; i< this.encounter.stats.length; i++){
@@ -374,13 +408,11 @@ Vue.createApp({
             }
         },
         CheckResult(attack){                        // Set a result based a to-hit roll
-            let result = "";
+            let result = null;
             let parts = attack.split(this.sep);
 
             let target = parts[1];
             let hitRoll = parts[2];
-
-            console.log("Targetting " + target + " with " + hitRoll);
 
             // Only process a result if the hit roll is a number
             if (!isNaN(Number(hitRoll))){
@@ -396,10 +428,8 @@ Vue.createApp({
                     let targetID = target.substring( target.indexOf("|")+1 );
                     targetID = targetID.substring( 0, targetID.length-1 );
 
-                    console.log("Target ID: " + targetID);
-
                     // Get ref to target
-                    targetObj = this.GetStatRefFromID(targetID);
+                    let targetObj = this.GetStatRefFromID(targetID);
 
                     if (targetObj != null){
 
@@ -442,17 +472,16 @@ Vue.createApp({
                 // Entering an attack?
                 if ($('#attackToggle').is(':checked')){
 
-                    console.log("attack toggle");
-
                     let actionString = this.AttackFieldsToEncodedString();
 
                     console.log(actionString);
 
-                    this.encounter.rounds[parts[1]-1].actors[parts[2]].action = actionString;
+                    //Update action string
+                    this.encounter.rounds[parts[1]-1].actors[parts[2]].action[parts[3]].desc = actionString;
 
                     // Determine a result - hit / miss / etc. TODO: only if no current result
                     if (this.IsValidAttack(actionString)){
-                        this.encounter.rounds[parts[1]-1].actors[parts[2]].result = this.CheckResult(actionString);
+                        this.encounter.rounds[parts[1]-1].actors[parts[2]].action[parts[3]].result = this.CheckResult(actionString);
                     }
 
                     // Save if new attack
@@ -464,7 +493,7 @@ Vue.createApp({
                     console.log("Not attack toggle");
 
                     // Generic action
-                    this.encounter.rounds[parts[1]-1].actors[parts[2]].action = $('#actionText').val();
+                    this.encounter.rounds[parts[1]-1].actors[parts[2]].action[parts[3]].desc = $('#actionText').val();
                 }
 
                 // Note unsaved data
@@ -472,6 +501,26 @@ Vue.createApp({
             }
 
             $('#actionModal').modal('hide');
+        },
+        AddActionForCreature(e){                    // Adds another action for the creature in chosen round
+            let parts = e.target.id.split("-");
+
+            let actionObj = {};
+            actionObj.desc = "";
+            actionObj.type = "";
+            actionObj.result = null;
+
+            this.encounter.rounds[parts[1]-1].actors[parts[2]].action.push(actionObj);
+        },
+        RemoveAction(){                             // Request to remove action
+            if (this.editID != ""){
+
+                let parts = this.actionID.split("-");
+
+                this.encounter.rounds[parts[1]-1].actors[parts[2]].action.splice(parts[3],1);
+
+                $('#actionModal').modal('hide');
+            }
         },
         FormatAttackObject(obj){                    // Formats an attack obj from JSON into a string
 
@@ -493,9 +542,10 @@ Vue.createApp({
 
             $('#attackHit').val("1d20" + this.AddModifierSign(attackInfo.hit));
             $('#attackDamage').val(attackInfo.damage);
-            $('#attackType').val(attackInfo.type);
-
             $('#actionSelector').text(attackInfo.name);
+
+            // Set damage type
+            $('#typeDropdownButton').text(this.LookUpAttackLongCode(attackInfo.type));
 
             // Display note, if there is one for this attack
             if (attackInfo.attacknotes){
@@ -541,7 +591,7 @@ Vue.createApp({
             for(let i=0; i<this.encounter.rounds[roundRef].actors.length; i++){
                 if (this.encounter.rounds[roundRef].actors[i].id == creatureRef){
 
-                    if (this.encounter.rounds[roundRef].actors[i].action == ""){    // Is the action empty?
+                    if (this.encounter.rounds[roundRef].actors[i].action[0].desc == ""){    // Is the action empty?
                         return false;
                     }
                     else{
@@ -803,12 +853,17 @@ Vue.createApp({
             // Loop over the stats to add actors
             for (let i=0; i<this.encounter.stats.length; i++){
 
-                actor = {};
+                let actor = {};
                 actor.id = this.encounter.stats[i].id;
                 actor.init = this.encounter.stats[i].init;
                 actor.name = this.encounter.stats[i].name;
-                actor.action = "";
-                actor.result = "";
+
+                actor.action = [];
+                let actionObj = {};
+                actionObj.desc = "";
+                actionObj.type = "";
+                actionObj.result = null;
+                actor.action.push(actionObj);
 
                 // Don't add actor if initiative is zero
                 if (actor.init>0) round.actors.push(actor);
@@ -838,7 +893,7 @@ Vue.createApp({
             let actionID = e.target.id;
             let parts = actionID.split("-");
 
-            let actionText = this.encounter.rounds[parts[1]-1].actors[parts[2]].action;
+            let actionText = this.encounter.rounds[parts[1]-1].actors[parts[2]].action[parts[3]].desc;
             let attacker = this.encounter.rounds[parts[1]-1].actors[parts[2]].name;
             let attacker_id = this.encounter.rounds[parts[1]-1].actors[parts[2]].id;
 
@@ -857,7 +912,7 @@ Vue.createApp({
         },
         FormatStatLineForum(isTheirTurn, stats, creature){
 
-            statline = "";
+            let statline = "";
 
             // Formatting in block
             if (isTheirTurn) statline += "➤ ";
@@ -906,7 +961,7 @@ Vue.createApp({
             return text;
         },
         FillChars(char, count){
-            text = "";
+            let text = "";
             for (let i=0; i<=count; i++){
                 text = text + char;
             }
@@ -914,7 +969,7 @@ Vue.createApp({
         },
         FormatStatLineDiscordSage(isTheirTurn, stats, creature, namePad){
 
-            statline = "";
+            let statline = "";
 
             let init = "" + stats.init;
             if (isTheirTurn) init = ">" + init;
@@ -929,7 +984,7 @@ Vue.createApp({
             if (creature.sp == 0){
 
                 statline += this.PadToCharsR("", 7);
-                statline += this.PadToCharsL((stats.hp - creature.hp)+"  ", 7);
+                statline += this.PadToCharsR((stats.hp - creature.hp)+"  ", 7);
                 statline += this.PadToCharsR("", 7);
             }
             else {

@@ -45,3 +45,10 @@ The application has three main sections.
 * [Encounters](./md_docs/encounter.md): An initiative and round tracker that combines a team and an encounter.
 
 You need to create encounter templates and teams as part of the setup, encounters are the main feature. For more information, use the links above.
+
+## Data storage
+
+The application uses a MySQL database, but the fields in the database are minimal. The data is mainly stored in JSON. For more information, see the following sections:
+
+* [Encounter / team template structure](./md_docs/template_structure.md)
+* [Encounter structure](./md_docs/encounter_structure.md)

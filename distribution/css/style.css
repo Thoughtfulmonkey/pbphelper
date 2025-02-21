@@ -102,3 +102,24 @@ body{
 .with-options{
     justify-content: space-between !important;
 }
+
+.action-cell{
+    clear: both;
+    margin-bottom: 4px;
+    overflow: auto;
+}
+
+.action-icon{
+    float: left;
+}
+
+.action-description{
+    float: left;
+    border-left: 8px solid #ddd;
+    padding-left: 5px;
+    min-height: 24px;
+}
+
+.action-buttons{
+    float: right;
+}
