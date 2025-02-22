@@ -31,8 +31,6 @@ Vue.createApp({
         const urlParams = new URLSearchParams(queryString);
         this.encounterId = urlParams.get('enc');
 
-        console.log(damage.types[0]);
-
         // Load an encounter if 
         if (this.encounterId === null){
             this.error = true;
@@ -110,13 +108,13 @@ Vue.createApp({
         },
         AttackFieldsToEncodedString(){              // "attack_name" + this.sep + ":target:" + this.sep + "1d20+x" + this.sep + "1dy+z type" + this.sep
             let encodedString = "";
-            if ($('#actionSelector').text() == "New"){                          // New attack. Use new name.
+            if ($('#actionSelector').text() == "New"){                              // New attack. Use new name.
                 encodedString += $('#newAttackName').val() + this.sep;
             }
-            if ($('#actionSelector').text().indexOf("Choose an attack")>-1){    // Attack without name selection
+            else if ($('#actionSelector').text().indexOf("Choose an attack")>-1){    // Attack without name selection
                 encodedString += "Attack" + this.sep;
             }
-            else{                                                               // Attack with selection
+            else{                                                                   // Attack with selection
                 encodedString += $('#actionSelector').text() + this.sep;
             } 
             encodedString += $('#attackTarget').val() + this.sep;
@@ -249,8 +247,6 @@ Vue.createApp({
 
             this.encounter.settings.platform = e.target.id;
 
-            console.log(e.target.id);
-
             this.SetPlatformDropdown();
         },
         AttackStringToParts(attackString){
@@ -282,11 +278,9 @@ Vue.createApp({
         },
         BuildFilteredAttackList(cref){
 
-            console.log("before: " + cref);
-
             // Check if one of a group of creatures
             let parts = cref.split("-");
-            console.log(parts);
+
             if (parts.length == 2){
                 cref = parts[0];
             }
@@ -308,8 +302,6 @@ Vue.createApp({
 
             let actions = this.encounter.rounds[parts[1]-1].actors[parts[2]].action;
             let actionString = actions[parts[3]].desc;
-
-            console.log(actionString);
 
             this.BuildFilteredAttackList(this.encounter.rounds[parts[1]-1].actors[parts[2]].id);
             
@@ -474,8 +466,6 @@ Vue.createApp({
 
                     let actionString = this.AttackFieldsToEncodedString();
 
-                    console.log(actionString);
-
                     //Update action string
                     this.encounter.rounds[parts[1]-1].actors[parts[2]].action[parts[3]].desc = actionString;
 
@@ -490,8 +480,6 @@ Vue.createApp({
                     }
                 }
                 else {
-                    console.log("Not attack toggle");
-
                     // Generic action
                     this.encounter.rounds[parts[1]-1].actors[parts[2]].action[parts[3]].desc = $('#actionText').val();
                 }
@@ -614,8 +602,6 @@ Vue.createApp({
             action = action.replaceAll(this.sep, "");
             let after = action.length;
 
-            //console.log("Validity check: " + (before-after) + " vs " + (this.sep.length * 4) );
-
             if ( (before-after) == (this.sep.length * 4) ){ // Are there 4 separators in the string?
                 return true;
             }
@@ -637,7 +623,6 @@ Vue.createApp({
                 newAttack.name = attackParts.name;
                 if (isNaN(Number(attackParts.hitMod))){
                     newAttack.hit = 0
-                    console.log(hitMod + " is not a number");
                 } else {
                     newAttack.hit = Number(attackParts.hitMod);
                 }
@@ -666,7 +651,7 @@ Vue.createApp({
 
                     let newAttack = this.AttackToObj(action, creature_id);
                     newAttack.id = this.GenerateRandomID(this.encounter.attacks);
-    
+
                     this.encounter.attacks.push(newAttack);
 
                     // Note unsaved data
