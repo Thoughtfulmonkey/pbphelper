@@ -19,7 +19,7 @@ You can easily test or run the PbP helper locally through a local server. For ex
 ## Installation
 
 1. Create a database on the server.
-2. Create a user account that has CREATE, SELECT, INSERT, and UPDATE priviledges for the database. In the near future, most likely DELETE as well.
+2. Create a user account that has CREATE, SELECT, INSERT, UPDATE, and DELETE priviledges for the database.
 3. Copy the contents of the distribution folder to a folder on your server. You can name the folder on your server anything that you want.
 4. In a browser, access the /setup/index.php file.
 5. Enter all of the required information, and then select **Submit**.
