@@ -49,19 +49,29 @@ Vue.createApp({
 
             fetch('./api/encounter.php?enc='+this.encounterId)
             .then(response => response.json())
-            .then(data => this.encounter = data)
-            .then(this.PostDataLoad);
+            .then(data => this.PostDataLoad(data));
 
             //.then(response => response.json())
             //.then(data => this.PostDataLoad(data));
         }
     },
     methods:{
-        PostDataLoad(){                             // Called after data load
-            this.ReorderForInitiative(this.encounter.stats);
+        PostDataLoad(data){                             // Called after data load
 
-            this.loading = false;
-            this.loaded = true;
+            if (data.error){
+                if (data.error == "Not logged in"){
+                    window.location.href = "./login.html";
+                }
+
+            } else {
+
+                this.encounter = data;
+
+                this.ReorderForInitiative(this.encounter.stats);
+
+                this.loading = false;
+                this.loaded = true;
+            }
         },
         GenerateRandomID(reviewBlock){              // Generates a 5 digit ID unique to the array
             let uniqueId = false;
