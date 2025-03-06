@@ -23,7 +23,16 @@ Vue.createApp({
             definingNewAttack: false,
             displayAttackNotes: true,
             attackNotesToDisplay: "No notes",
-            filteredAttacks: []         // Attacks thats belong to the currently selected creature
+            filteredAttacks: [],         // Attacks thats belong to the currently selected creature
+            attackModalData:{
+                newName: "",
+                name: "",
+                target: "",
+                hit: "",
+                damage: "",
+                type: "",
+                actionText: ""
+            }
         }
     },
     mounted () {
@@ -108,22 +117,22 @@ Vue.createApp({
         },
         AttackFieldsToEncodedString(){              // "attack_name" + this.sep + ":target:" + this.sep + "1d20+x" + this.sep + "1dy+z type" + this.sep
             let encodedString = "";
-            if ($('#actionSelector').text() == "New"){                              // New attack. Use new name.
+            if (this.attackModalData.name == "New"){                              // New attack. Use new name.
                 encodedString += $('#newAttackName').val() + this.sep;
             }
-            else if ($('#actionSelector').text().indexOf("Choose an attack")>-1){    // Attack without name selection
+            else if (this.attackModalData.name.indexOf("Choose an attack")>-1){    // Attack without name selection
                 encodedString += "Attack" + this.sep;
             }
             else{                                                                   // Attack with selection
-                encodedString += $('#actionSelector').text() + this.sep;
+                encodedString += this.attackModalData.name + this.sep;
             } 
-            encodedString += $('#attackTarget').val() + this.sep;
-            encodedString += $('#attackHit').val() + this.sep;
+            encodedString += this.attackModalData.target + this.sep;
+            encodedString += this.attackModalData.hit + this.sep;
 
             // Get short code for attack type
-            let attackType = this.LookUpAttackShortCode( $('#typeDropdownButton').text() );
+            let attackType = this.LookUpAttackShortCode( this.attackModalData.type );
 
-            encodedString += $('#attackDamage').val() + " " + attackType + this.sep;
+            encodedString += this.attackModalData.damage + " " + attackType + this.sep;
 
             return encodedString;
         },
@@ -300,6 +309,8 @@ Vue.createApp({
             this.actionID = e.target.id;
             let parts = this.actionID.split("-");
 
+            console.log("Opening action modal");
+
             let actions = this.encounter.rounds[parts[1]-1].actors[parts[2]].action;
             let actionString = actions[parts[3]].desc;
 
@@ -321,27 +332,35 @@ Vue.createApp({
                 let attackParts = this.AttackStringToParts(actionString);
 
                 // Set name  of the attack in the dropdown
-                $('#actionSelector').text(attackParts.name);
+                this.attackModalData.name = attackParts.name;
 
-                $('#attackTarget').val(attackParts.target);
+                this.attackModalData.target = attackParts.target;
 
                 // Modifier (1d20+x) or rolled number
                 if (attackParts.rolledHit != null){
-                    $('#attackHit').val(attackParts.rolledHit);
+                    this.attackModalData.hit = attackParts.rolledHit;
                 } else {
-                    $('#attackHit').val("1d20" + this.AddModifierSign(attackParts.hitMod));
+                    this.attackModalData.hit = "1d20" + this.AddModifierSign(attackParts.hitMod);
                 }
-                $('#attackDamage').val(attackParts.damage);
+                this.attackModalData.damage = attackParts.damage;
                 
                 // Set damage type
-                //$('#attackType').val(attackParts.type); 
-                $('#typeDropdownButton').text(this.LookUpAttackLongCode(attackParts.type));               
+                this.attackModalData.type = this.LookUpAttackLongCode(attackParts.type)               
             }
             else {
                 this.enteringAttack = false;
                 $('#attackToggle').prop('checked', false);
 
-                $('#actionText').val(actionString);
+                console.log("Action text: " + actionString)
+
+                this.attackModalData.actionText = actionString;
+
+                // Reset all attack field variables
+                this.attackModalData.name = "Choose an attack";
+                this.attackModalData.target = "";
+                this.attackModalData.hit = "";
+                this.attackModalData.damage = "";
+                this.attackModalData.type = "Damage type";
             }
 
             $('#actionModal').modal('show');
@@ -353,7 +372,7 @@ Vue.createApp({
             this.enteringAttack = e.target.checked;
         },
         ChooseDamageOption(damageName){                         // Set the damage dropdown button  
-            $('#typeDropdownButton').text(damageName);
+            this.attackModalData.type = damageName;
         },
         LookUpAttackShortCode(longCode){                        // Convert damage longCode to shortCode
             for (let i=0; i<this.damageData.length; i++){
@@ -481,7 +500,8 @@ Vue.createApp({
                 }
                 else {
                     // Generic action
-                    this.encounter.rounds[parts[1]-1].actors[parts[2]].action[parts[3]].desc = $('#actionText').val();
+                    this.encounter.rounds[parts[1]-1].actors[parts[2]].action[parts[3]].desc = this.attackModalData.actionText;
+
                 }
 
                 // Note unsaved data
@@ -528,12 +548,12 @@ Vue.createApp({
             let attackParts = attackID.split("-");
             let attackInfo = this.filteredAttacks[ attackParts[1] ];  // Use filtered list of character attacks
 
-            $('#attackHit').val("1d20" + this.AddModifierSign(attackInfo.hit));
-            $('#attackDamage').val(attackInfo.damage);
-            $('#actionSelector').text(attackInfo.name);
+            this.attackModalData.hit = "1d20" + this.AddModifierSign(attackInfo.hit);
+            this.attackModalData.damage = attackInfo.damage;
+            this.attackModalData.name = attackInfo.name;
 
             // Set damage type
-            $('#typeDropdownButton').text(this.LookUpAttackLongCode(attackInfo.type));
+            this.attackModalData.type = this.LookUpAttackLongCode(attackInfo.type);
 
             // Display note, if there is one for this attack
             if (attackInfo.attacknotes){
@@ -550,13 +570,12 @@ Vue.createApp({
         DefineNewAttack(){
 
             // Clear all fields
-            $('#attackTarget').val("");
-            $('#attackHit').val("");
-            $('#attackDamage').val("");
-            $('#attackType').val("");
+            this.attackModalData.target = "";
+            this.attackModalData.hit = "";
+            this.attackModalData.damage = "";
 
             // Set drop down
-            $('#actionSelector').text("New");
+            this.attackModalData.name = "New";
 
             this.definingNewAttack = true;
             this.displayAttackNotes = false;
@@ -594,7 +613,7 @@ Vue.createApp({
             let creatureID = e.target.id;
             let longName = this.LookupCreatureName(creatureID);
             let targetString = "(" + longName + "|" + creatureID + ")";
-            $('#attackTarget').val(targetString);
+            this.attackModalData.target = targetString;
         },
         IsValidAttack(action){                      // Check to see if the attack is formatted correctly
 
