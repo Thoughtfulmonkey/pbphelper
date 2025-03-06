@@ -118,7 +118,7 @@ Vue.createApp({
             }
         },
         EncodedTargetToID(target){                  // Extracts ID from a "(name|ID)" string
-            targetID = "";
+            let targetID = "";
             if (target.indexOf("|")>-1){
                 targetID = target.substring( target.indexOf("|")+1 );
                 targetID = targetID.substring( 0, targetID.length-1 );
@@ -759,7 +759,7 @@ Vue.createApp({
                     // TODO: reorder the correct table; use flag, move to end of funciton, and remove duplication
                     if (numName == "init") this.ReorderForInitiative(this.encounter.stats);
                     else if (numName.indexOf("init")>-1){
-                        roundNum = Number(numName.substring(1, numName.indexOf("init"))) - 1;
+                        let roundNum = Number(numName.substring(1, numName.indexOf("init"))) - 1;
                         this.ReorderForInitiative(this.encounter.rounds[roundNum].actors);
                     }
 
@@ -775,7 +775,7 @@ Vue.createApp({
 
                         if (numName == "init") this.ReorderForInitiative(this.encounter.stats);
                         else if (numName.indexOf("init")>-1){
-                            roundNum = Number(numName.substring(1, numName.indexOf("init"))) - 1;
+                            let roundNum = Number(numName.substring(1, numName.indexOf("init"))) - 1;
                             this.ReorderForInitiative(this.encounter.rounds[roundNum].actors);
                         }
                     }
@@ -809,7 +809,7 @@ Vue.createApp({
                     else if (numName.indexOf("init")>-1){
                         param = "init";
 
-                        roundNum = Number(numName.substring(1, numName.indexOf("init"))) - 1;
+                        let roundNum = Number(numName.substring(1, numName.indexOf("init"))) - 1;
                         jsonBlock = this.encounter.rounds[roundNum].actors;
                     }
                     else {

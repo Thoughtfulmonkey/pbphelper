@@ -154,7 +154,7 @@ Vue.createApp({
                 if (data.section=="encounter") sectionArray = this.listing.encounters;
 
                 // Look for match
-                matchIndex = -1;
+                let matchIndex = -1;
                 for (let i=0; i<sectionArray.length; i++){
                     if (sectionArray[i].id == data.id){
                         matchIndex = i;
