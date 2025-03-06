@@ -87,7 +87,7 @@
                             <div class="col-sm">
                               <div class="dropdown">
                                 <button class="btn btn-secondary dropdown-toggle mb-2" type="button" id="actionSelector" data-bs-toggle='dropdown' aria-haspopup="true" aria-expanded="false">
-                                  Choose an attack
+                                  {{attackModalData.name}}
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="actionSelector">
                                   <a 
@@ -111,7 +111,7 @@
                             <!-- target nam -->
                             <div class="col-sm">
                               <label>Target: </label>
-                              <input type="text" class="form-control" id="attackTarget">
+                              <input type="text" class="form-control" id="attackTarget" :value="attackModalData.target">
                             </div>
                           </div>
                           <div class="row">
@@ -130,17 +130,17 @@
                           <div class="row">
                             <div class="col-sm">
                               <label>Hit: </label>
-                              <input type="text" class="form-control" id="attackHit">
+                              <input type="text" class="form-control" id="attackHit" v-model="attackModalData.hit">
                             </div>
                             <div class="col-sm">
                               <label>Damage: </label>
-                              <input type="text" class="form-control" id="attackDamage">
+                              <input type="text" class="form-control" id="attackDamage" v-model="attackModalData.damage">
                             </div>
                             <div class="col-sm">
                               <label>Type: </label>
                               <div class="dropdown">
                                 <button class="btn btn-secondary dropdown-toggle" type="button" id="typeDropdownButton" data-bs-toggle='dropdown' aria-haspopup="true" aria-expanded="false">
-                                  Damage type
+                                  {{attackModalData.type}}
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="typeDropdownButton">
                                   <a v-for="(damageOption, index) in damageData" class="dropdown-item" href="#" @click="ChooseDamageOption(damageOption.long)">
@@ -161,7 +161,7 @@
 
                       <div id="genericEntryBlock" v-if="!enteringAttack">
                         <!-- Text input field -->
-                        <textarea class="form-control mt-2" id="actionText" rows="3"></textarea>
+                        <textarea class="form-control mt-2" id="actionText" rows="3" v-model="attackModalData.actionText"></textarea>
                       </div>
 
                     </div>
@@ -457,6 +457,6 @@
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
         <script src="./js/system.js"></script>
-        <script type="module" src="./js/enc_app.js?v=27"></script>
+        <script type="module" src="./js/enc_app.js?v=30"></script>
     </body>
 </html>
