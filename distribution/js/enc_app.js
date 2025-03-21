@@ -50,9 +50,6 @@ Vue.createApp({
             fetch('./api/encounter.php?enc='+this.encounterId)
             .then(response => response.json())
             .then(data => this.PostDataLoad(data));
-
-            //.then(response => response.json())
-            //.then(data => this.PostDataLoad(data));
         }
     },
     methods:{
@@ -1118,12 +1115,16 @@ Vue.createApp({
                 method: "POST",
                 headers: {'Content-Type': 'application/json'}, 
                 body: JSON.stringify(this.encounter)
-            }).then(res => {
-                console.log("Request complete! response:", res);
-
-                // Changes saved
+            })
+            .then(response => response.json())
+            .then(data => this.ProcessSaveResult(data));
+        },
+        ProcessSaveResult(data){                        // Alerts user if there was an error saving
+            if (data.error){   
+                alert("Error: " + data.error);
+            } else {
                 this.unsaved = false;
-            });
+            }
         }
     },
     created() {
