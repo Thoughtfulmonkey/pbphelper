@@ -115,11 +115,10 @@ Vue.createApp({
 
             $('#creatureModal').modal('show');
         },
-        EditCreature(e){
-            this.creatureId = e.target.id;
-            let parts = this.creatureId.split("-");
+        EditCreature(index){
 
-            let c = this.encounter.creatures[parts[2]];
+            let c = this.encounter.creatures[index];
+            this.creatureId = index;
 
             $('#creatureName').val(c.name);
             $('#creatureInit').val(c.init);
@@ -170,8 +169,8 @@ Vue.createApp({
                 this.encounter.creatures.push(creatureBlockRef);
             }
             else {
-                let parts = this.creatureId.split("-");
-                creatureBlockRef = this.encounter.creatures[parts[2]];
+                //let parts = this.creatureId.split("-");
+                creatureBlockRef = this.encounter.creatures[this.creatureId];
             }
 
             creatureBlockRef.name = $('#creatureName').val();
@@ -225,11 +224,10 @@ Vue.createApp({
 
             $('#attackModal').modal('show');
         },
-        EditAttack(e){
-            this.attackID = e.target.id;
+        EditAttack(index){
 
-            let parts = this.attackID.split("-");
-            let a = this.encounter.attacks[parts[2]];
+            let a = this.encounter.attacks[index];
+            this.attackID = index;
 
             let ownerName = this.LookUpCreatureId(a.creature);
             $('#ownerDropdown').text(ownerName);
@@ -290,8 +288,8 @@ Vue.createApp({
                 this.encounter.attacks.push(attackBlockRef);
             }
             else {
-                let parts = this.attackID.split("-");
-                attackBlockRef = this.encounter.attacks[parts[2]];
+                //let parts = this.attackID.split("-");
+                attackBlockRef = this.encounter.attacks[this.attackID];
             }
             
             attackBlockRef.name = $('#attackName').val();
@@ -406,12 +404,12 @@ Vue.createApp({
             // Loop over inventory, looking for weapons
             for (let a=0; a<importedjson.inventory.length; a++){
 
-                item = importedjson.inventory[a];
+                let item = importedjson.inventory[a];
 
                 // Is it a weapon?
                 if (item.type == "Weapon"){
 
-                    attack = {};
+                    let attack = {};
 
                     attack.name = item.name;
                     attack.hit = item.toHit;
@@ -510,7 +508,7 @@ Vue.createApp({
                     if (item.kind === "file") {
                         const file = item.getAsFile();
 
-                        reader = new FileReader();
+                        let reader = new FileReader();
                         reader.onload = this.ImportFileRead;
                         reader.readAsText(file);
                     }

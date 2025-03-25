@@ -9,7 +9,11 @@ Vue.createApp({
             error: false,               // True if there's an error
             errorMessage: "",           // Error message to display
             encounter: {},              // The main JSON
-            actionID: "",               // Stores the ID when an action is edited
+            actionData:{                // Stores the ID when an action is edited
+                roundNum: -1, 
+                actorIndex: -1, 
+                actionIndex: -1
+            },
             noteID: "",                 // Stores the ID when a note is edited
             lastHighlighted: null,      // Stores the ID of the table cell currently highlighted
             creatureInfoID: "",         // ID of the last creature whose info was displayed in the modal
@@ -312,16 +316,17 @@ Vue.createApp({
                 }
             }
         },
-        OpenActionModal(e){                         // Opens the modal to add an action
-            this.actionID = e.target.id;
-            let parts = this.actionID.split("-");
+        OpenActionModal(roundNum, actorIndex, actionIndex){                         // Opens the modal to add an action
 
-            console.log("Opening action modal");
+            let actions = this.encounter.rounds[roundNum-1].actors[actorIndex].action;
+            let actionString = actions[actionIndex].desc;
 
-            let actions = this.encounter.rounds[parts[1]-1].actors[parts[2]].action;
-            let actionString = actions[parts[3]].desc;
+            // Store values
+            this.actionData.roundNum = roundNum;
+            this.actionData.actorIndex = actorIndex;
+            this.actionData.actionIndex = actionIndex;
 
-            this.BuildFilteredAttackList(this.encounter.rounds[parts[1]-1].actors[parts[2]].id);
+            this.BuildFilteredAttackList(this.encounter.rounds[roundNum-1].actors[actorIndex].id);
             
             // Hide the new attack name field
             this.definingNewAttack = false;
@@ -484,8 +489,10 @@ Vue.createApp({
         SaveActionModal(){                          // Saves the action
 
             if (this.editID != ""){
-
-                let parts = this.actionID.split("-");
+   
+                let roundIndex = this.actionData.roundNum;
+                let actorIndex = this.actionData.actorIndex;
+                let actionIndex = this.actionData.actionIndex;
 
                 // Entering an attack?
                 if ($('#attackToggle').is(':checked')){
@@ -493,11 +500,11 @@ Vue.createApp({
                     let actionString = this.AttackFieldsToEncodedString();
 
                     //Update action string
-                    this.encounter.rounds[parts[1]-1].actors[parts[2]].action[parts[3]].desc = actionString;
+                    this.encounter.rounds[roundIndex-1].actors[actorIndex].action[actionIndex].desc = actionString;
 
                     // Determine a result - hit / miss / etc. TODO: only if no current result
                     if (this.IsValidAttack(actionString)){
-                        this.encounter.rounds[parts[1]-1].actors[parts[2]].action[parts[3]].result = this.CheckResult(actionString);
+                        this.encounter.rounds[roundIndex-1].actors[actorIndex].action[actionIndex].result = this.CheckResult(actionString);
                     }
 
                     // Save if new attack
@@ -507,7 +514,7 @@ Vue.createApp({
                 }
                 else {
                     // Generic action
-                    this.encounter.rounds[parts[1]-1].actors[parts[2]].action[parts[3]].desc = this.attackModalData.actionText;
+                    this.encounter.rounds[roundIndex-1].actors[actorIndex].action[actionIndex].desc = this.attackModalData.actionText;
 
                 }
 
@@ -900,13 +907,11 @@ Vue.createApp({
 
             document.getElementById('scratchpadTextArea').value = text;
         },
-        CopyActionToScratchpad(e){                  // Copies an action to the scratchpad
-            let actionID = e.target.id;
-            let parts = actionID.split("-");
+        CopyActionToScratchpad(roundNum, actorIndex, actionIndex){                  // Copies an action to the scratchpad
 
-            let actionText = this.encounter.rounds[parts[1]-1].actors[parts[2]].action[parts[3]].desc;
-            let attacker = this.encounter.rounds[parts[1]-1].actors[parts[2]].name;
-            let attacker_id = this.encounter.rounds[parts[1]-1].actors[parts[2]].id;
+            let actionText = this.encounter.rounds[roundNum-1].actors[actorIndex].action[actionIndex].desc;
+            let attacker = this.encounter.rounds[roundNum-1].actors[actorIndex].name;
+            let attacker_id = this.encounter.rounds[roundNum-1].actors[actorIndex].id;
 
             if ( this.IsValidAttack(actionText) ){
 
