@@ -20,7 +20,7 @@
 
             <!-- Fixed position button for scratchpad -->
             <button v-if="loaded" class="btn btn-secondary btn-lg position-fixed bottom-0 end-0" type="button" @click="OpenScratchpadModal">
-              <i class="fa-solid fa-clipboard"></i>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#fff" d="M19 3h-4.18C14.25 1.44 12.53.64 11 1.2c-.86.3-1.5.96-1.82 1.8H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2m-7 0a1 1 0 0 1 1 1a1 1 0 0 1-1 1a1 1 0 0 1-1-1a1 1 0 0 1 1-1M7 7h10V5h2v14H5V5h2zm10 4H7V9h10zm-2 4H7v-2h8z"/></svg>
             </button>
 
             <!-- Modal for the scratchpad -->
@@ -36,7 +36,7 @@
                   <div class="modal-footer" style="justify-content: space-between">
                       <div>
                         <button type="button" class="btn btn-secondary" @click="ScratchpadRemoveLinebreaks">
-                          <img src="./img/heroicons--arrow-turn-up-left-16-solid.svg" />
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M18.41 16.59L13.82 12l4.59-4.59L17 6l-6 6l6 6zM6 6h2v12H6z"/></svg>
                         </button>
                       </div>
                       <div>
@@ -295,7 +295,7 @@
             <div v-if="loaded" class="d-flex justify-content-center mt-3">
 
               <a href="./index.html" class="btn btn-secondary me-1" role="button">
-                <i class="fa-solid fa-house"></i> Home
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="#fff" d="M10 20v-6h4v6h5v-8h3L12 3L2 12h3v8z"/></svg> Home
               </a>
 
               <button 
@@ -313,14 +313,14 @@
                 type="button" 
                 class="btn btn-secondary me-1"
                 v-on:click="OpenConfigModal">
-                  <i class="fa-solid fa-gear"></i>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="#fff" d="M12 15.5A3.5 3.5 0 0 1 8.5 12A3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5a3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97s-.03-.66-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.31-.61-.22l-2.49 1c-.52-.39-1.06-.73-1.69-.98l-.37-2.65A.506.506 0 0 0 14 2h-4c-.25 0-.46.18-.5.42l-.37 2.65c-.63.25-1.17.59-1.69.98l-2.49-1c-.22-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64L4.57 11c-.04.34-.07.67-.07 1s.03.65.07.97l-2.11 1.66c-.19.15-.25.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1.01c.52.4 1.06.74 1.69.99l.37 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.37-2.65c.63-.26 1.17-.59 1.69-.99l2.49 1.01c.22.08.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64z"/></svg>
               </button>
 
               <button
                 type="button" 
                 class="btn btn-primary btn-sm"
                 @click="CopyCreatureInfoToScratchpad">
-                  <i class="fa-solid fa-copy"></i>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="#fff" d="M19 21H8V7h11m0-2H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2m-3-4H4a2 2 0 0 0-2 2v14h2V3h12z"/></svg>
               </button>
 
             </div>
@@ -415,24 +415,19 @@
                                 </div>
                                 <div class="action-buttons">
                                   <button 
-                                    :id="'btn-' + round.num + '-' + aindex + '-' + aaindex"
                                     type="button" 
                                     class="btn btn-primary btn-sm first-option"
-                                    @click="OpenActionModal">
-                                    <i 
-                                        :id="'lbl-' + round.num + '-' + aindex + '-' + aaindex"
-                                        class="fa-solid fa-pen">
-                                    </i>
+                                    @click="OpenActionModal(round.num, aindex, aaindex)">
+                                    <svg 
+                                      xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                                      <path fill="#fff" d="M16.84 2.73c-.39 0-.77.15-1.07.44l-2.12 2.12l5.3 5.31l2.12-2.1c.6-.61.6-1.56 0-2.14L17.9 3.17c-.3-.29-.68-.44-1.06-.44M12.94 6l-8.1 8.11l2.56.28l.18 2.29l2.28.17l.29 2.56l8.1-8.11m-14 3.74L2.5 21.73l6.7-1.79l-.24-2.16l-2.31-.17l-.18-2.32"/>
+                                    </svg>
                                   </button>
                                   <button 
-                                    :id="'cpybtn-' + round.num + '-' + aindex + '-' + aaindex"
                                     type="button" 
                                     class="btn btn-primary btn-sm"
-                                    @click="CopyActionToScratchpad">
-                                    <i 
-                                        :id="'lbl-' + round.num + '-' + aindex + '-' + aaindex"
-                                        class="fa-solid fa-copy">
-                                    </i>
+                                    @click="CopyActionToScratchpad(round.num, aindex, aaindex)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="#fff" d="M19 21H8V7h11m0-2H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2m-3-4H4a2 2 0 0 0-2 2v14h2V3h12z"/></svg>
                                   </button>
                                 </div>
                               </div>
@@ -453,10 +448,9 @@
         </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-        <script src="https://kit.fontawesome.com/3720f97f63.js" crossorigin="anonymous"></script>
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
         <script src="./js/system.js"></script>
-        <script type="module" src="./js/enc_app.js?v=33"></script>
+        <script type="module" src="./js/enc_app.js?v=35"></script>
     </body>
 </html>

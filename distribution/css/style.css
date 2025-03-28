@@ -123,3 +123,15 @@ body{
 .action-buttons{
     float: right;
 }
+
+.danger-btn-icon svg{
+    fill: #dc3545;
+}
+
+.danger-btn-icon:hover svg{
+    fill: white;
+}
+
+.pen-icon-btn{
+    padding: 4px;
+}

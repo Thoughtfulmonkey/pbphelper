@@ -52,3 +52,7 @@ The application uses a MySQL database, but the fields in the database are minima
 
 * [Encounter / team template structure](./md_docs/template_structure.md)
 * [Encounter structure](./md_docs/encounter_structure.md)
+
+## Third-party
+
+Google Material Iconsby [Material Design Authors](https://github.com/material-icons/material-icons)
