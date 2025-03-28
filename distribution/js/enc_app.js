@@ -926,16 +926,16 @@ Vue.createApp({
             document.getElementById('scratchpadTextArea').value += actionText + "\n"
             this.CopyToClipboard(actionText);
         },
-        FormatStatLineForum(isTheirTurn, stats, creature){
+        FormatStatLineForum(isTheirTurn, stats, creature, acted){
 
             let statline = "";
 
             // Formatting in block
-            if (isTheirTurn) statline += "➤ ";
+            if (isTheirTurn && !acted) statline += "➤ ";
 
             statline += "(" + stats.init +") ";
 
-            if (isTheirTurn){
+            if (isTheirTurn && !acted){
                 statline += "[b]" + stats.name + "[/b] ";
             }
             else {
@@ -983,12 +983,12 @@ Vue.createApp({
             }
             return text;
         },
-        FormatStatLineDiscordSage(isTheirTurn, stats, creature, namePad){
+        FormatStatLineDiscordSage(isTheirTurn, stats, creature, namePad, acted){
 
             let statline = "";
 
             let init = "" + stats.init;
-            if (isTheirTurn) init = ">" + init;
+            if (isTheirTurn && !acted) init = ">" + init;
             statline += this.PadToCharsL(init, 4);
 
             statline += "  "; // Padding between initiative and name
@@ -1063,9 +1063,9 @@ Vue.createApp({
 
                     // Format a stat line
                     if (this.encounter.settings.platform == "paizo-forum"){
-                        fstat += this.FormatStatLineForum(inBlock, stats, creature);
+                        fstat += this.FormatStatLineForum(inBlock, stats, creature, acted);
                     } else {
-                        fstat += this.FormatStatLineDiscordSage(inBlock, stats, creature, maxNameLength);
+                        fstat += this.FormatStatLineDiscordSage(inBlock, stats, creature, maxNameLength, acted);
                     }
 
                 }
