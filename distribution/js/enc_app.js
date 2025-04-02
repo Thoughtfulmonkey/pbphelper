@@ -16,6 +16,13 @@ Vue.createApp({
             },
             noteID: "",                 // Stores the ID when a note is edited
             lastHighlighted: null,      // Stores the ID of the table cell currently highlighted
+            modNumValue: 0,             // Stores the value of the number currently being modified
+            modNumMaxValue: 0,          // The maximum value of the number currently being modified
+            storedParamRef: {           // Direct reference to the number currently being modified
+                jsonBlock: null,
+                numIndex: 0,
+                param: ""
+            },       
             creatureInfoID: "",         // ID of the last creature whose info was displayed in the modal
             sep: "==",                  // Seperator for encoded actions
             targetVar: ":target:",      // Variable for the target - to be replaced
@@ -251,10 +258,18 @@ Vue.createApp({
                 $('#platformSelector').text("Discord (Sage)");
             }
         },
+        SetNumModDropdown(){
+            if (this.encounter.settings.numberInputMethod == "mod-panel"){
+                $('#numModSelector').text("Panel");
+            } else {
+                $('#numModSelector').text("Keyboard");
+            }
+        },
         OpenConfigModal(e){                           // Opens the modal to modify config settings
             
             // Set UI based on setting values
             this.SetPlatformDropdown();
+            this.SetNumModDropdown();
 
             $('#configModal').modal('show');
         },
@@ -268,6 +283,14 @@ Vue.createApp({
             this.encounter.settings.platform = e.target.id;
 
             this.SetPlatformDropdown();
+        },
+        SelectNumModMethod(e){
+            // Note unsaved data
+            this.unsaved = true;
+
+            this.encounter.settings.numberInputMethod = e.target.id;
+
+            this.SetNumModDropdown();
         },
         AttackStringToParts(attackString){
             let baseParts = attackString.split(this.sep);
@@ -745,53 +768,146 @@ Vue.createApp({
             
             return reformed;
         },
+        CancelNumMod(){
+            this.lastHighlighted = null;
+            $('#numModModal').modal('hide');
+        },
+        SaveNumMod(){
+            this.lastHighlighted = null;
+
+            // Update the value in the json data
+            this.storedParamRef.jsonBlock[this.storedParamRef.numIndex][this.storedParamRef.param] = this.modNumValue;
+
+            $('#numModModal').modal('hide');
+        },
         NumRoller(e){                               // Handles selection of a number for modification             
             let numID = e.target.dataset.ref;
             let selected = e.target;
 
             if (numID){ // Only proceed if a UI element with a ref data attribute is selected
 
-                // Click on same cell to deselect
-                if (this.lastHighlighted == selected){
+                if (this.encounter.settings.numberInputMethod == "mod-panel"){
+                    this.OpenNumModPanel(selected);
+                }
+                else{
+                    this.NumModKeyboard(selected);
+                } 
+            }
+        },
+        OpenNumModPanel(selected){
 
-                    let numName = selected.dataset.ref.substring(0, selected.dataset.ref.indexOf("-"));
-                    
+            // Ensure that we cancel any keyboard selection
+            if (this.lastHighlighted != null){
+                this.lastHighlighted.classList.remove("cell-highlight");
+            }
+
+            let numName = selected.dataset.ref.substring(0, selected.dataset.ref.indexOf("-")); // E.g., sp, hp, rp
+            let numIndex = Number(selected.dataset.ref.substring(numName.length+1)); // Array index
+            
+            let jsonBlock = null;
+            let param = "";
+
+            // Choosing the right section
+            if (numName == "init"){                 // Init param in top init block
+                jsonBlock = this.encounter.stats;
+                param = "init";
+
+                this.modNumMaxValue = -1; // No max value
+            }
+            else if (numName.indexOf("init")>-1){   // Init param in a round block
+                param = "init";
+
+                let roundNum = Number(numName.substring(1, numName.indexOf("init"))) - 1;
+                jsonBlock = this.encounter.rounds[roundNum].actors;
+
+                this.modNumMaxValue = -1; // No max value
+            }
+            else {                                  // Some other parameter in the top init block
+                jsonBlock = this.encounter.stats;
+                param = numName;
+
+                // Get a ref to the creature
+                let creatureRef = this.encounter.stats[numIndex].ref;
+                let creature = this.GetCreature(creatureRef);
+
+                // Get max value for the param
+                this.modNumMaxValue = creature[numName];
+            }
+
+            this.lastHighlighted = selected;
+            this.modNumValue = jsonBlock[numIndex][param];
+
+            // Store jsonBlock[numIndex][param] in separate variables to access later
+            this.storedParamRef.jsonBlock = jsonBlock;
+            this.storedParamRef.numIndex = numIndex;
+            this.storedParamRef.param = param;
+
+            document.getElementById("num-mod-display").innerHTML = jsonBlock[numIndex][param];
+            
+            $('#numModModal').modal('show');
+        },
+        NumberChange(delta){
+
+            delta = Number(delta);
+
+            if (delta == 999){          // Max
+                if (this.modNumMaxValue != -1){
+                    this.modNumValue = this.modNumMaxValue;
+                }
+            }
+            else if (delta == 0){       // Zero
+                this.modNumValue = 0;
+            }
+            else{                       // Number change
+                this.modNumValue += delta;
+            }
+
+            // Update
+            document.getElementById("num-mod-display").innerHTML = this.modNumValue;
+        },
+        NumModKeyboard(selected){
+
+            // Click on same cell to deselect
+            if (this.lastHighlighted == selected){
+
+                let numName = selected.dataset.ref.substring(0, selected.dataset.ref.indexOf("-"));
+                
+                //$("#"+this.lastHighlighted).removeClass("cell-highlight");
+                this.lastHighlighted.classList.remove("cell-highlight");
+                this.lastHighlighted = null;
+
+                // TODO: reorder the correct table; use flag, move to end of funciton, and remove duplication
+                if (numName == "init") this.ReorderForInitiative(this.encounter.stats);
+                else if (numName.indexOf("init")>-1){
+                    let roundNum = Number(numName.substring(1, numName.indexOf("init"))) - 1;
+                    this.ReorderForInitiative(this.encounter.rounds[roundNum].actors);
+                }
+
+            } else {
+
+                // Deselect to switch selection
+                if (this.lastHighlighted != null){
+
+                    let numName = this.lastHighlighted.dataset.ref.substring(0, this.lastHighlighted.dataset.ref.indexOf("-"));
+
                     //$("#"+this.lastHighlighted).removeClass("cell-highlight");
                     this.lastHighlighted.classList.remove("cell-highlight");
-                    this.lastHighlighted = null;
 
-                    // TODO: reorder the correct table; use flag, move to end of funciton, and remove duplication
                     if (numName == "init") this.ReorderForInitiative(this.encounter.stats);
                     else if (numName.indexOf("init")>-1){
                         let roundNum = Number(numName.substring(1, numName.indexOf("init"))) - 1;
                         this.ReorderForInitiative(this.encounter.rounds[roundNum].actors);
                     }
-
-                } else {
-
-                    // Deselect to switch selection
-                    if (this.lastHighlighted != null){
-
-                        let numName = this.lastHighlighted.dataset.ref.substring(0, this.lastHighlighted.dataset.ref.indexOf("-"));
-
-                        //$("#"+this.lastHighlighted).removeClass("cell-highlight");
-                        this.lastHighlighted.classList.remove("cell-highlight");
-
-                        if (numName == "init") this.ReorderForInitiative(this.encounter.stats);
-                        else if (numName.indexOf("init")>-1){
-                            let roundNum = Number(numName.substring(1, numName.indexOf("init"))) - 1;
-                            this.ReorderForInitiative(this.encounter.rounds[roundNum].actors);
-                        }
-                    }
-
-                    // New selection
-                    //$("#"+numID).addClass("cell-highlight");
-                    e.target.classList.add("cell-highlight");
-                    this.lastHighlighted = selected;
                 }
+
+                // New selection
+                //$("#"+numID).addClass("cell-highlight");
+                selected.classList.add("cell-highlight");
+                this.lastHighlighted = selected;
             }
         },
         ScrollNumber(e){                            // Handles incrememnt / decrement of selected number
+
             if (this.lastHighlighted != null){
 
                 let key = e.key;
