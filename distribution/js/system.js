@@ -1,4 +1,4 @@
-let buildnum = "ico-001";
+let buildnum = "param-002";
 
 // Display build number
 const builddiv = document.createElement("div");
