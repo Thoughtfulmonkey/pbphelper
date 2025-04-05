@@ -10,8 +10,77 @@
         <!-- Main application -->
         <div id="app" class="container mb-5">
 
+            <!-- Modal for config settings -->
+            <div class="modal fade" id="configModal" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="actionModalLabel">Global settings</h5>
+                        </div>
+                        <div class="modal-body">
+                            <div class="dropdown">
+                                <p>Platform:</p>
+                                <button class="btn btn-secondary dropdown-toggle mb-2" type="button" id="platformSelector" data-bs-toggle='dropdown' aria-haspopup="true" aria-expanded="false">
+                                    Choose a platform
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="platformSelector">
+                                    <a 
+                                        id="paizo-forum"
+                                        class="dropdown-item" 
+                                        @click="SelectPlatform">
+                                            Paizo forums
+                                    </a>
+                                    <a 
+                                        id="discord-sage"
+                                        class="dropdown-item" 
+                                        @click="SelectPlatform">
+                                            Discord (Sage)
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="dropdown">
+                                <p>Number change method:</p>
+                                <button class="btn btn-secondary dropdown-toggle mb-2" type="button" id="numModSelector" data-bs-toggle='dropdown' aria-haspopup="true" aria-expanded="false">
+                                    Choose a method
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="numModSelector">
+                                    <a 
+                                        id="mod-keyboard"
+                                        class="dropdown-item" 
+                                        @click="SelectNumModMethod">
+                                            Keyboard
+                                    </a>
+                                    <a 
+                                        id="mod-panel"
+                                        class="dropdown-item" 
+                                        @click="SelectNumModMethod">
+                                            Panel
+                                    </a>
+                                </div>
+                            </div>
+                        </div> 
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @click="CloseConfigModal">Close</button>
+                            <button type="button" class="btn btn-primary" @click="SaveGlobalConfigs">Update</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div v-if="loading" class="alert alert-info" role="alert">
                 Loading...
+            </div>
+
+            <div v-if="loaded" class="d-flex justify-content-center mt-3">
+                <a href="./login.html" class="btn btn-secondary me-1" role="button">
+                    Sign out
+                </a>
+                <button 
+                    type="button" 
+                    class="btn btn-secondary me-1"
+                    v-on:click="OpenConfigModal">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="#fff" d="M12 15.5A3.5 3.5 0 0 1 8.5 12A3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5a3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97s-.03-.66-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.31-.61-.22l-2.49 1c-.52-.39-1.06-.73-1.69-.98l-.37-2.65A.506.506 0 0 0 14 2h-4c-.25 0-.46.18-.5.42l-.37 2.65c-.63.25-1.17.59-1.69.98l-2.49-1c-.22-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64L4.57 11c-.04.34-.07.67-.07 1s.03.65.07.97l-2.11 1.66c-.19.15-.25.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1.01c.52.4 1.06.74 1.69.99l.37 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.37-2.65c.63-.26 1.17-.59 1.69-.99l2.49 1.01c.22.08.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64z"/></svg>
+                </button>
             </div>
 
             <h2 class="mt-4">Encounter templates</h2>
@@ -114,6 +183,6 @@
         <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
         <script src="./js/system.js"></script>
-        <script src="./js/index_app.js?v=9"></script>
+        <script src="./js/index_app.js?v=12"></script>
     </body>
 </html>

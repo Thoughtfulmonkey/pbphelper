@@ -1,6 +1,6 @@
 # Encounter structure
 
-*version: en-0.1*
+*version: en-0.2*
 
 An encounter includes the following data:
 
@@ -35,9 +35,10 @@ For each creature in each round, there is an array of action objects. The main c
 ## Example JSON
 
     {
-        "version": "en-0.1",
+        "version": "en-0.2",
         "settings": {
-            "platform": "paizo-forum"
+            "platform": "paizo-forum",
+            "modMethod": "keyboard"
         },
         "stats": [
             {

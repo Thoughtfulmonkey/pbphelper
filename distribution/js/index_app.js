@@ -43,6 +43,56 @@ Vue.createApp({
                 if (this.listing.encounters.length == 0) this.noEncounters = true;
             }
         },
+        SetPlatformDropdown(){
+            if (this.listing.settings.platform == "paizo-forum"){
+                $('#platformSelector').text("Paizo forum");
+            } else {
+                $('#platformSelector').text("Discord (Sage)");
+            }
+        },
+        SetNumModDropdown(){
+            if (this.listing.settings.modMethod == "mod-panel"){
+                $('#numModSelector').text("Panel");
+            } else {
+                $('#numModSelector').text("Keyboard");
+            }
+        },
+        OpenConfigModal(e){                           // Opens the modal to modify config settings
+            
+            // Set UI based on setting values
+            this.SetPlatformDropdown();
+            this.SetNumModDropdown();
+
+            $('#configModal').modal('show');
+        },
+        CloseConfigModal(){                          // Closes the config settings modal
+            $('#configModal').modal('hide');
+        },
+        SaveGlobalConfigs(){
+
+            fetch('./api/save_global_config.php', {
+                method: "POST",
+                headers: {'Content-Type': 'application/json'}, 
+                body: JSON.stringify(this.listing.settings)
+            })
+            .then(response => response.json())
+            .then(data => this.GlobalConfigSaveResult(data));
+        },
+        GlobalConfigSaveResult(data){
+            if (data.result){
+                if (data.result == "success"){
+                    $('#configModal').modal('hide');
+                }
+            }
+        },
+        SelectPlatform(e){
+            this.listing.settings.platform = e.target.id;
+            this.SetPlatformDropdown();
+        },
+        SelectNumModMethod(e){
+            this.listing.settings.modMethod = e.target.id;
+            this.SetNumModDropdown();
+        },
         NewTemplate(){
             fetch('./api/new_template.php', {
                 method: "POST",

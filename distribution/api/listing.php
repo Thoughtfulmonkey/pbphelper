@@ -56,7 +56,24 @@ try {
         if ($i<sizeof($result)-1) echo ',';
     }
 
-    echo ']';
+    echo '],';
+
+    // Global settings
+    echo '"settings":{';
+
+    $stmt = $conn->prepare('SELECT `value` FROM '.$prefix.'config WHERE `param`="platform"');
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    echo '"platform":"' . $result[0]['value'] . '",';
+
+    $stmt = $conn->prepare('SELECT `value` FROM '.$prefix.'config WHERE `param`="modMethod"');
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    echo '"modMethod":"' . $result[0]['value'] . '"';
+
+    echo '}';
 
     // Close
     echo '}';

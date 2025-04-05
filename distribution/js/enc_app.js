@@ -21,7 +21,8 @@ Vue.createApp({
             storedParamRef: {           // Direct reference to the number currently being modified
                 jsonBlock: null,
                 numIndex: 0,
-                param: ""
+                param: "",
+                roundNum: -1
             },       
             creatureInfoID: "",         // ID of the last creature whose info was displayed in the modal
             sep: "==",                  // Seperator for encoded actions
@@ -259,7 +260,7 @@ Vue.createApp({
             }
         },
         SetNumModDropdown(){
-            if (this.encounter.settings.numberInputMethod == "mod-panel"){
+            if (this.encounter.settings.modMethod == "mod-panel"){
                 $('#numModSelector').text("Panel");
             } else {
                 $('#numModSelector').text("Keyboard");
@@ -288,7 +289,7 @@ Vue.createApp({
             // Note unsaved data
             this.unsaved = true;
 
-            this.encounter.settings.numberInputMethod = e.target.id;
+            this.encounter.settings.modMethod = e.target.id;
 
             this.SetNumModDropdown();
         },
@@ -778,6 +779,21 @@ Vue.createApp({
             // Update the value in the json data
             this.storedParamRef.jsonBlock[this.storedParamRef.numIndex][this.storedParamRef.param] = this.modNumValue;
 
+            console.log(this.storedParamRef.numIndex);
+            console.log(this.storedParamRef.param);
+
+            // Is it initiative?
+            if (this.storedParamRef.param == "init"){
+
+                // Initiative in a round block, or the top block
+                if (this.storedParamRef.roundNum > -1){
+                    this.ReorderForInitiative(this.encounter.rounds[this.storedParamRef.roundNum].actors);
+                }
+                else{
+                    this.ReorderForInitiative(this.encounter.stats);
+                }
+            }
+
             $('#numModModal').modal('hide');
         },
         NumRoller(e){                               // Handles selection of a number for modification             
@@ -786,7 +802,7 @@ Vue.createApp({
 
             if (numID){ // Only proceed if a UI element with a ref data attribute is selected
 
-                if (this.encounter.settings.numberInputMethod == "mod-panel"){
+                if (this.encounter.settings.modMethod == "mod-panel"){
                     this.OpenNumModPanel(selected);
                 }
                 else{
@@ -806,6 +822,7 @@ Vue.createApp({
             
             let jsonBlock = null;
             let param = "";
+            let roundNum = -1;
 
             // Choosing the right section
             if (numName == "init"){                 // Init param in top init block
@@ -817,7 +834,7 @@ Vue.createApp({
             else if (numName.indexOf("init")>-1){   // Init param in a round block
                 param = "init";
 
-                let roundNum = Number(numName.substring(1, numName.indexOf("init"))) - 1;
+                roundNum = Number(numName.substring(1, numName.indexOf("init"))) - 1;
                 jsonBlock = this.encounter.rounds[roundNum].actors;
 
                 this.modNumMaxValue = -1; // No max value
@@ -841,6 +858,7 @@ Vue.createApp({
             this.storedParamRef.jsonBlock = jsonBlock;
             this.storedParamRef.numIndex = numIndex;
             this.storedParamRef.param = param;
+            this.storedParamRef.roundNum = roundNum;
 
             document.getElementById("num-mod-display").innerHTML = jsonBlock[numIndex][param];
             

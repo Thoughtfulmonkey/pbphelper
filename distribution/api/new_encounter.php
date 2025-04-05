@@ -8,7 +8,7 @@ require './bumpcheck.php';
 $debugReturn = '';
 
 // Version number for encounter json
-$version = "en-0.1";
+$version = "en-0.2";
 
 // https://stackoverflow.com/questions/6041741/fastest-way-to-check-if-a-string-is-json-in-php
 function isJson($string) {
@@ -212,9 +212,20 @@ if ( isJson($postdata) ){
         // Empty rounds
         $encounter->rounds = [];
     
-        // Add settings
+        // Global settings
         $settings = new stdClass();
-        $settings->platform = "paizo-forum"; // TODO: load DB settings
+
+        $stmt = $conn->prepare('SELECT `value` FROM '.$prefix.'config WHERE `param`="platform"');
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $settings->platform = $result[0]['value'];
+
+        $stmt = $conn->prepare('SELECT `value` FROM '.$prefix.'config WHERE `param`="modMethod"');
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $settings->modMethod =$result[0]['value'];
         $encounter->settings = $settings;
 
         // Copying stuff from another encounter

@@ -81,6 +81,15 @@
 
                     echo "<p>Set log-in password. <span class='success'>✔</span></p>";
                     
+                    $stmt = $conn->prepare("INSERT INTO `".$prefix."config` (`param`, `value`) VALUES ('platform', 'discord-sage')");
+                    $stmt->execute();
+
+                    echo "<p>Set default platform as Discord-Sage. <span class='success'>✔</span></p>";
+
+                    $stmt = $conn->prepare("INSERT INTO `".$prefix."config` (`param`, `value`) VALUES ('modMethod', 'keyboard')");
+                    $stmt->execute();
+
+                    echo "<p>Set default number modification method as keyboard. <span class='success'>✔</span></p>";
 
                     $connfile = fopen("../api/connection.php", "w");
 
