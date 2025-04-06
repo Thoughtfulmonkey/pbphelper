@@ -55,4 +55,4 @@ The application uses a MySQL database, but the fields in the database are minima
 
 ## Third-party
 
-Google Material Iconsby [Material Design Authors](https://github.com/material-icons/material-icons)
+Google Material Icons by [Material Design Authors](https://github.com/material-icons/material-icons)
