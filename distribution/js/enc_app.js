@@ -44,7 +44,18 @@ Vue.createApp({
                 damage: "",
                 type: "",
                 actionText: ""
-            }
+            },
+            newCreatureData:{
+                init: 0,
+                name: "",
+                sp: 0,
+                hp: 0,
+                rp: 0,
+                eac: 0,
+                kac: 0,
+                pc: false
+            },
+            addingCreature: false
         }
     },
     mounted () {
@@ -251,6 +262,111 @@ Vue.createApp({
         },
         CloseInfoModal(){
             $('#creatureModal').modal('hide');
+        },
+        GetNewCreatureID(isPC){
+
+            let highestNum = 0;
+
+            let t = "";
+            if (isPC){
+                t="pc";
+            }
+            else {
+                t="e";
+            }
+
+            // Loop over current creatures
+            for (let i=0; i< this.encounter.creatures.length; i++){
+
+                let c = this.encounter.creatures[i];
+
+                // Match for t?
+                if (c.id.indexOf(t)>-1){
+                    let num = Number(c.id.substring(t.length));
+
+                    if (num>highestNum){
+                        highestNum = num;
+                    }
+                }
+            }
+
+            return t + (highestNum+1);
+        },
+        AddCreature(){
+            this.addingCreature = true;
+        },
+        SaveCreature(){
+            console.log(this.newCreatureData);
+
+            // Create creature object
+            let newCreature = {};
+            newCreature.name = this.newCreatureData.name;
+            newCreature.sp = Number(this.newCreatureData.sp);
+            newCreature.hp = Number(this.newCreatureData.hp);
+            newCreature.rp = Number(this.newCreatureData.rp);
+            newCreature.eac = Number(this.newCreatureData.eac);
+            newCreature.kac = Number(this.newCreatureData.kac);
+
+            // Filler info
+            newCreature.init = 0;   // This is the init modifier
+            newCreature.ref = 0;
+            newCreature.fort = 0;
+            newCreature.will = 0;
+            newCreature.moves = {"type": "land", "speed": 30}
+            newCreature.quantity = 1;
+            newCreature.creaturenotes = "";
+
+            // Create ID
+            newCreature.id = this.GetNewCreatureID(this.newCreatureData.pc);
+
+            // Add to json
+            this.encounter.creatures.push(newCreature);
+
+            let statsEntry = {};
+            statsEntry.id = newCreature.id + "-1";
+            statsEntry.ref = newCreature.id;                        // Ties the stat block entry to creature
+            statsEntry.init = Number(this.newCreatureData.init);
+            statsEntry.name = this.newCreatureData.name;
+            statsEntry.sp = Number(this.newCreatureData.sp);
+            statsEntry.hp = Number(this.newCreatureData.hp);
+            statsEntry.rp = Number(this.newCreatureData.rp);
+            statsEntry.eac = Number(this.newCreatureData.eac);
+            statsEntry.kac = Number(this.newCreatureData.kac);
+
+            // Filler info
+            statsEntry.creaturenotes = "";
+
+            if (this.newCreatureData.pc){
+                statsEntry.type = "pc";
+            } else {
+                statsEntry.type = "enemy";
+            }
+
+            console.log(statsEntry);
+
+            // Add to json
+            this.encounter.stats.push(statsEntry);
+
+            // Clear fields
+            this.newCreatureData.init = "";
+            this.newCreatureData.name = "";
+            this.newCreatureData.sp = "";
+            this.newCreatureData.hp = "";
+            this.newCreatureData.rp = "";
+            this.newCreatureData.eac = "";
+            this.newCreatureData.kac = "";
+
+            // Close panel
+            this.addingCreature = false;
+
+            // Reorder initiatives in stat block
+            this.ReorderForInitiative(this.encounter.stats);
+
+            // Log unsaved changes
+            this.unsaved = true;
+        },
+        CancelCreature(){
+            this.addingCreature = false;
         },
         SetPlatformDropdown(){
             if (this.encounter.settings.platform == "paizo-forum"){
