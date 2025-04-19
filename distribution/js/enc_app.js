@@ -910,6 +910,9 @@ Vue.createApp({
                 }
             }
 
+            // Note unsaved data
+            this.unsaved = true;
+
             $('#numModModal').modal('hide');
         },
         NumRoller(e){                               // Handles selection of a number for modification             
@@ -1035,7 +1038,6 @@ Vue.createApp({
                 }
 
                 // New selection
-                //$("#"+numID).addClass("cell-highlight");
                 selected.classList.add("cell-highlight");
                 this.lastHighlighted = selected;
             }
