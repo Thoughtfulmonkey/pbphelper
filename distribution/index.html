@@ -136,13 +136,20 @@
                 <li v-if="noEncounters" class="list-group-item">No encounters</li>
             </ul>
 
+            <div v-if="loaded" class="input-group mb-3">
+                <input type="text" id="newEmptyEncounterName" class="form-control" placeholder="Empty encounter name" aria-label="Empty encounter name" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                  <button class="btn btn-secondary" type="button" v-on:click="NewEmptyEncounter">Add empty encounter</button>
+                </div>
+            </div>
+
             <div v-if="loaded" class="d-flex justify-content-center mt-3">
                 <div class="dropdown me-1">
                     <button class="btn btn-secondary dropdown-toggle" type="button" id="teamDropdown" data-bs-toggle='dropdown' aria-haspopup="true" aria-expanded="false">
                       Team
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a v-for="team in listing.teams" class="dropdown-item" href="#" @click="ChooseTeam(team.id)">{{team.name}}</a>
+                        <a v-for="team in listing.teams" class="dropdown-item" @click="ChooseTeam(team.id)">{{team.name}}</a>
                     </div>
                 </div>
                 <div class="dropdown me-1">
@@ -150,7 +157,7 @@
                       Template
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                      <a v-for="template in listing.templates" class="dropdown-item" href="#" @click="ChooseTemplate(template.id)">{{template.name}}</a>
+                      <a v-for="template in listing.templates" class="dropdown-item" @click="ChooseTemplate(template.id)">{{template.name}}</a>
                     </div>
                 </div>
 
@@ -171,7 +178,7 @@
                       Continues from
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                      <a v-for="encounter in listing.encounters" class="dropdown-item" href="#" @click="ChooseEncounter(encounter.id)">{{encounter.name}}</a>
+                      <a v-for="encounter in listing.encounters" class="dropdown-item" @click="ChooseEncounter(encounter.id)">{{encounter.name}}</a>
                     </div>
                 </div>
             </div>

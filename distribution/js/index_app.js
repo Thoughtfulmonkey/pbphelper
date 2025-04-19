@@ -131,6 +131,16 @@ Vue.createApp({
                 console.log(data.message);
             }
         },
+        NewEmptyEncounter(){
+            
+            fetch('./api/new_encounter.php', {
+                method: "POST",
+                headers: {'Content-Type': 'application/json'}, 
+                body: '{"template": "", "team": "", "continueFrom": "", "encounterName": "' + $('#newEmptyEncounterName').val() + '"}'  // Don't encode here, otherwise need double decode to access in PHP
+            })
+            .then(response => response.json())
+            .then(data => this.EncounterCreated(data));
+        },
         NewEncounter(){
 
             if (this.chosenEncounter === null) this.chosenEncounter = "";
@@ -138,9 +148,8 @@ Vue.createApp({
             fetch('./api/new_encounter.php', {
                 method: "POST",
                 headers: {'Content-Type': 'application/json'}, 
-                body: '{"template": "' + this.chosenTemplate + '", "team": "' + this.chosenTeam + '", "continueFrom": "' + this.chosenEncounter + '"}'  // Don't encode here, otherwise need double decode to access in PHP
+                body: '{"template": "' + this.chosenTemplate + '", "team": "' + this.chosenTeam + '", "continueFrom": "' + this.chosenEncounter + '", "encounterName": ""}'  // Don't encode here, otherwise need double decode to access in PHP
             })
-            //.then(response => this.EncounterCreated(response));
             .then(response => response.json())
             .then(data => this.EncounterCreated(data));
         },
@@ -166,6 +175,7 @@ Vue.createApp({
                 this.listing.encounters.push(data);
 
                 this.chosenEncounter = null;
+                $('#newEmptyEncounterName').val("");
             }
             else{
                 console.log(data.message);
@@ -190,7 +200,6 @@ Vue.createApp({
                 headers: {'Content-Type': 'application/json'}, 
                 body: '{"section": "' + section + '", "id": "' + id + '"}'  // Don't encode here, otherwise need double decode to access in PHP
             })
-            //.then(response => this.EncounterCreated(response));
             .then(response => response.json())
             .then(data => this.DeleteResult(data));
         },

@@ -115,7 +115,6 @@
                             <a 
                               v-for="(creature, index) in encounter.creatures" 
                               class="dropdown-item" 
-                              href="#" 
                               @click="ChooseOwner(index)">{{creature.name}}</a>
                           </div>
                         </div>
@@ -132,8 +131,8 @@
                                       Range type
                                     </button>
                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                      <a class="dropdown-item" href="#" @click="ChooseClass('Melee')">Melee</a>
-                                      <a class="dropdown-item" href="#" @click="ChooseClass('Ranged')">Ranged</a>
+                                      <a class="dropdown-item" @click="ChooseClass('Melee')">Melee</a>
+                                      <a class="dropdown-item" @click="ChooseClass('Ranged')">Ranged</a>
                                     </div>
                                 </div>
 
@@ -162,7 +161,7 @@
                                       Damage type
                                     </button>
                                     <div class="dropdown-menu" aria-labelledby="typeDropdownButton">
-                                      <a v-for="(damageOption, index) in damageData" class="dropdown-item" href="#" @click="ChooseDamageOption(damageOption.long)">
+                                      <a v-for="(damageOption, index) in damageData" class="dropdown-item" @click="ChooseDamageOption(damageOption.long)">
                                         {{damageOption.long}}
                                       </a>
                                     </div>

@@ -58,7 +58,6 @@
                         `ts` timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP,
                         `publicId` varchar(5) NOT NULL,
                         `name` varchar(80) NOT NULL,
-                        `template` int UNSIGNED NOT NULL,
                         `json` json NOT NULL,
                         PRIMARY KEY (`id`)
                     );');

@@ -6,6 +6,7 @@ require './connection.php';
 require './bumpcheck.php';
 
 $debugReturn = '';
+error_reporting(E_ERROR | E_WARNING | E_PARSE);
 
 // Version number for encounter json
 $version = "en-0.2";
@@ -59,7 +60,7 @@ function isJson($string) {
 }
 
 function AddToStats($statArray, $creatureArray){
-
+    
     for ($c=0; $c<sizeof($creatureArray); $c++){
 
         $qc = 1;
@@ -135,6 +136,30 @@ function AddNewAttacks($copyTo, $copyFrom){
     return $copyTo;
 }
 
+function GetEmptyGeneric(){
+
+    $generic = new stdClass();
+    $generic->attacks = [];
+    $generic->creatures = [];
+    $generic->maxId = 0;
+
+    return $generic;
+}
+
+function GetEmptyTemplate(){
+    $emptyTemplate = GetEmptyGeneric();
+    $emptyTemplate->side = "enemy";
+    
+    return  $emptyTemplate;
+}
+
+function GetEmptyTeam(){
+    $emptyTeam = GetEmptyGeneric();
+    $emptyTeam->side="pc";
+
+    return $emptyTeam;
+}
+
 $postdata = file_get_contents('php://input');
 
 if ( isJson($postdata) ){
@@ -164,24 +189,35 @@ if ( isJson($postdata) ){
         $jsonData = json_decode($postdata, true);
         $template = $jsonData['template'];
         $team = $jsonData['team'];
+        $encounterName = $jsonData['encounterName'];
         
-        // Load the template
-        $stmt = $conn->prepare('SELECT * from '.$prefix.'template WHERE publicId=:id');
-        $stmt->bindParam(':id', $template, PDO::PARAM_STR);
-        $stmt->execute();
+        $templateData = null;
+        if ($template != ""){
 
-        $templateData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            // Load the template
+            $stmt = $conn->prepare('SELECT * from '.$prefix.'template WHERE publicId=:id');
+            $stmt->bindParam(':id', $template, PDO::PARAM_STR);
+            $stmt->execute();
 
-        // Load the team
-        $stmt = $conn->prepare('SELECT * from '.$prefix.'template WHERE publicId=:id');
-        $stmt->bindParam(':id', $team, PDO::PARAM_STR);
-        $stmt->execute();
+            $templateData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
 
-        $teamData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $teamData = null;
+        if ($team != ""){
 
+            // Load the team
+            $stmt = $conn->prepare('SELECT * from '.$prefix.'template WHERE publicId=:id');
+            $stmt->bindParam(':id', $team, PDO::PARAM_STR);
+            $stmt->execute();
+
+            $teamData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        
         // Build new data
-        $encName = $teamData[0]['name'].' vs '.$templateData[0]['name'];
-    
+        $encName = $encounterName;
+        if ($encName == ""){
+            $encName = $teamData[0]['name'].' vs '.$templateData[0]['name'];
+        }
 
         $encounter = new stdClass();
     
@@ -189,16 +225,30 @@ if ( isJson($postdata) ){
         $encounter->version = $version;
 
         // Json to PHP object
-        $templateObj = json_decode($teamData[0]['json']);
-        $teamObj = json_decode($templateData[0]['json']);
-    
+        $templateObj = null;
+        if ($templateData != null){
+            $templateObj = json_decode($templateData[0]['json']);
+        }
+        else{
+            $templateObj = GetEmptyTemplate();
+        }
+
+        $teamObj = null;
+        if ($teamData != null){
+            $teamObj = json_decode($teamData[0]['json']);
+        }
+        else{
+            $teamObj = GetEmptyTeam();
+        }
+
         // Build stat block
         $statArray = [];
+
         $statArray = AddToStats($statArray, $templateObj->creatures);
         $statArray = AddToStats($statArray, $teamObj->creatures);
     
         $encounter->stats = $statArray;
-    
+  
         // Add creatures
         $encounter->creatures = [];
         $encounter->creatures = CopyArray($encounter->creatures, $templateObj->creatures);
@@ -211,7 +261,7 @@ if ( isJson($postdata) ){
     
         // Empty rounds
         $encounter->rounds = [];
-    
+
         // Global settings
         $settings = new stdClass();
 
@@ -251,16 +301,14 @@ if ( isJson($postdata) ){
         // PHP object to JSON
         $jsonEncounter = json_encode($encounter);
         
-        $debugReturn = $debugReturn.'"Nane is '.$encName.'",';
+        $debugReturn = $debugReturn.'"Name is '.$encName.'",';
 
         // Insert stub into database
-        $stmt = $conn->prepare('INSERT INTO '.$prefix.'encounter (publicId, ts, name, template, json) VALUES (:encid, CURRENT_TIMESTAMP(), :name, :tid, :json)');
+        $stmt = $conn->prepare('INSERT INTO '.$prefix.'encounter (publicId, ts, name, json) VALUES (:encid, CURRENT_TIMESTAMP(), :name, :json)');
         $stmt->bindParam(':encid', $newId, PDO::PARAM_STR);
         $stmt->bindParam(':name', $encName, PDO::PARAM_STR);
-        $stmt->bindParam(':tid', $templateData[0]['id'], PDO::PARAM_INT);
         $stmt->bindParam(':json', $jsonEncounter, PDO::PARAM_STR);
         $stmt->execute();
-
 
         echo '{"result": "success", "name": "'.$encName.'", "id": "'.$newId.'"';
         if ($debugReturn != ""){
@@ -271,6 +319,7 @@ if ( isJson($postdata) ){
         echo '}';
 
     } catch(PDOException $e) {
+        
         echo '{"result": "error",';
         if ($debugReturn != ""){
             echo ', "debug":[';
