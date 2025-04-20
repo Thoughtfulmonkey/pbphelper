@@ -979,6 +979,7 @@ Vue.createApp({
             this.storedParamRef.param = param;
             this.storedParamRef.roundNum = roundNum;
 
+            document.getElementById("num-mod-custom-delta").value = "0";
             document.getElementById("num-mod-display").innerHTML = jsonBlock[numIndex][param];
             
             $('#numModModal').modal('show');
@@ -1001,6 +1002,18 @@ Vue.createApp({
 
             // Update
             document.getElementById("num-mod-display").innerHTML = this.modNumValue;
+        },
+        NumberChangeCustom(direc){
+            let customVal = Number(document.getElementById("num-mod-custom-delta").value);
+
+            if (!Number.isNaN(customVal)){
+                if (direc == "add"){
+                    this.NumberChange(customVal);
+                }
+                else{
+                    this.NumberChange(0-customVal);
+                }
+            }
         },
         NumModKeyboard(selected){
 
