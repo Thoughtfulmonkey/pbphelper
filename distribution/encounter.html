@@ -122,7 +122,6 @@
                                     v-for="(attack, index) in filteredAttacks"
                                     :id="'att-' + index"
                                     class="dropdown-item" 
-                                    href="#"
                                     @click="SelectAttack">
                                       {{attack.name}}
                                     </a>
@@ -171,7 +170,7 @@
                                   {{attackModalData.type}}
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="typeDropdownButton">
-                                  <a v-for="(damageOption, index) in damageData" class="dropdown-item" href="#" @click="ChooseDamageOption(damageOption.long)">
+                                  <a v-for="(damageOption, index) in damageData" class="dropdown-item" @click="ChooseDamageOption(damageOption.long)">
                                     {{damageOption.long}}
                                   </a>
                                 </div>

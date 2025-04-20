@@ -19,6 +19,8 @@ To choose an output format, complete the following steps:
 2. From the **Platform** list, select an output format.
 3. Select **Close**.
 
+**Note**: To set the default value for new encounters, select the cog icon on the listing page, and change the value there.
+
 ### Creating a new round
 
 **Important**: Only creatures that have an initiative greater than zero in the stat table will be added to the round.
@@ -27,10 +29,20 @@ To choose an output format, complete the following steps:
 
 ### Changing a value in the stat table
 
-If you need to adjust an individual value, for example, to set an initiative or manually apply damage, complete the following steps:
+Two methods are available if you need to adjust an individual value, for example, to set an initiative or manually apply damage.
+
+To change the method for an encounter, select the cog icon at the top of the encounter page, and then choose a value from the **Number change method** list. To change the default method for encounters created in the future, select the cog icon at the top of the listing page.
+
+Keboard method:
 
 1. In the stat table, select the value that you want to change.
 2. Press the plus key (+) on your keyboard to increase the value by one, or the minus key (-) to decrease the value by 1.
+
+Panel method:
+
+1. In the stat table, select the value that you want to change.
+2. In the **Set value** window, select buttons to adjust the value.
+3. Select **Update** to apply the change.
 
 ![](./img/encounter_highlight.png "Selecting Robot 2's initiative to change its value")
 
