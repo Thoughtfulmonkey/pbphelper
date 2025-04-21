@@ -7,9 +7,11 @@ This software uses trademarks and/or copyrights owned by Paizo Inc., used under 
 ## Preview videos
 
 Demonstation of basic usage, where you can create an encounter, and then add creatures:
+
 [![Basic usage](https://img.youtube.com/vi/XJWb3Il7bbg/0.jpg)](https://www.youtube.com/watch?v=XJWb3Il7bbg)
 
 Demonstration of standard usage, where you create an ancounter template and a team before you create an encounter:
+
 [![tandard usage](https://img.youtube.com/vi/WUKjb8qmB34/0.jpg)](https://www.youtube.com/watch?v=WUKjb8qmB34)
 
 ## Requirements
