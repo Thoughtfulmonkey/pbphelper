@@ -4,6 +4,14 @@ A tool to help manage Starfinder games played by post. The core functionality is
 
 This software uses trademarks and/or copyrights owned by Paizo Inc., used under Paizo's Community Use Policy (paizo.com/licenses/communityuse). We are expressly prohibited from charging you to use or access this content. This software is not published, endorsed, or specifically approved by Paizo. For more information about Paizo Inc. and Paizo products, visit paizo.com.
 
+## Preview videos
+
+Demonstation of basic usage, where you can create an encounter, and then add creatures:
+[![Basic usage](https://img.youtube.com/vi/XJWb3Il7bbg/0.jpg)](https://www.youtube.com/watch?v=XJWb3Il7bbg)
+
+Demonstration of standard usage, where you create an ancounter template and a team before you create an encounter:
+[![tandard usage](https://img.youtube.com/vi/WUKjb8qmB34/0.jpg)](https://www.youtube.com/watch?v=WUKjb8qmB34)
+
 ## Requirements
 
 This is a web application. You'll require a sever that meets the following requirements:
